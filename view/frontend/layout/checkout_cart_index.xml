@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2026 Blue Fairy Development. All rights reserved.
+ *
+ * Removes the Luma export button block and injects the Hyva Alpine.js export button.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Remove Luma export button -->
+        <referenceBlock name="bluefairy.cartproducts.export" remove="true"/>
+
+        <!-- Inject Hyva Alpine.js export button into ListText actions block -->
+        <referenceBlock name="checkout.cart.order.actions">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="bluefairy.cartproducts.hyva.export"
+                   template="BlueFairy_CartProductsHyva::cart/export-button.phtml"
+                   cacheable="false">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">BlueFairy\CartProducts\ViewModel\ExportButton</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

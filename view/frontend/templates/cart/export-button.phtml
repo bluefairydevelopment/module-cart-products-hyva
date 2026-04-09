@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Copyright © 2026 Blue Fairy Development. All rights reserved.
+ *
+ * Hyva Alpine.js cart export button — self-contained component.
+ * Gates on canExport() — renders nothing if feature disabled or guest not allowed.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \BlueFairy\CartProducts\ViewModel\ExportButton $viewModel
+ */
+
+$viewModel = $block->getData('view_model');
+
+if (!$viewModel->canExport()) {
+    return;
+}
+?>
+<script>
+function cartExport(url) {
+    return {
+        loading: false,
+        downloaded: false,
+        error: null,
+        async download() {
+            this.loading = true;
+            this.error = null;
+            this.downloaded = false;
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 30000);
+            try {
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new URLSearchParams({ form_key: window.hyva.getFormKey() }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (!r.ok) throw new Error('<?= $escaper->escapeJs(__('Export failed. Please try again.')) ?>');
+                const blob = await r.blob();
+                const filename = r.headers.get('X-Filename') ?? 'cart.csv';
+                const a = Object.assign(document.createElement('a'), {
+                    href: URL.createObjectURL(blob),
+                    download: filename
+                });
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 100);
+                this.downloaded = true;
+                setTimeout(() => { this.downloaded = false; }, 2000);
+            } catch (err) {
+                clearTimeout(timeout);
+                this.error = err.message;
+            } finally {
+                this.loading = false;
+            }
+        }
+    }
+}
+</script>
+
+<div x-data="cartExport('<?= $escaper->escapeHtmlAttr($viewModel->getActionUrl()) ?>')"
+     class="cart-export-wrapper mt-4 mb-4">
+    <button @click="download()"
+            :disabled="loading"
+            type="button"
+            class="btn btn-primary">
+        <span x-show="!loading && !downloaded"><?= $escaper->escapeHtml(__('Export Cart')) ?></span>
+        <span x-show="loading" x-cloak><?= $escaper->escapeHtml(__('Exporting…')) ?></span>
+        <span x-show="downloaded" x-cloak><?= $escaper->escapeHtml(__('Downloaded')) ?></span>
+    </button>
+    <p x-show="error"
+       x-text="error"
+       x-cloak
+       class="text-red-600 mt-2 text-sm"
+       role="alert"></p>
+</div>

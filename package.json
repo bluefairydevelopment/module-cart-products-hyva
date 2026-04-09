@@ -1,0 +1,8 @@
+{
+    "name": "bluefairy-cart-products-hyva",
+    "private": true,
+    "devDependencies": {
+        "jest": "^29.7",
+        "jest-environment-jsdom": "^29.7"
+    }
+}
