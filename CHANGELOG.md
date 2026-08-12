@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `canExport()` ViewModel gate — renders nothing when export is disabled or guest export is not permitted
 - `X-Filename` response header support for dynamic CSV filename, with `cart.csv` fallback
 - Module declaration (`etc/module.xml`) with sequence dependencies on `BlueFairy_CartProducts` and `Hyva_Theme`
-- Composer package `blue-fairy/module-cart-products-hyva` requiring PHP 8.3+ and `blue-fairy/module-cart-products ^1.0`
+- Composer package `bluefairy/module-cart-products-hyva` requiring PHP 8.3+ and `bluefairy/module-cart-products ^1.0`
 - Jest 29 unit test suite (10 tests) covering all component states, timeout, filename fallback, blob cleanup, and CSRF token injection
 - `README.md` with installation instructions, architecture comparison (Luma vs. Hyva), component API, button states, and troubleshooting guide
 - `FEATURES.md` user-facing feature walkthrough with layout behaviour table

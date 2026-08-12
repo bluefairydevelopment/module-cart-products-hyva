@@ -16,7 +16,7 @@ Hyva theme companion for [BlueFairy_CartProducts](../CartProducts/README.md). Re
 ## Installation
 
 ```bash
-composer require blue-fairy/module-cart-products-hyva
+composer require bluefairy/module-cart-products-hyva
 php bin/magento module:enable BlueFairy_CartProductsHyva
 php bin/magento setup:upgrade
 php -d memory_limit=2G bin/magento setup:di:compile
