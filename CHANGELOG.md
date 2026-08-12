@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4 — 2026-08-12
+
+### Changed
+- Gitignore docs/screenshots/
+
 ## 1.0.3 — 2026-08-12
 
 ### Changed
