@@ -61,12 +61,13 @@ function makeBlobUrl() {
 }
 
 function makeResponse(overrides = {}) {
-    const headers = new Map(Object.entries(overrides.headers || {}));
+    const { headers: headersObj = {}, ...restOverrides } = overrides;
+    const headers = new Map(Object.entries(headersObj));
     return {
-        ok: overrides.ok !== undefined ? overrides.ok : true,
+        ok: restOverrides.ok !== undefined ? restOverrides.ok : true,
         blob: jest.fn().mockResolvedValue(new Blob(['csv,data'])),
-        headers: { get: (name) => headers.get(name) || null },
-        ...overrides
+        headers: { get: (name) => headers.get(name) ?? null },
+        ...restOverrides
     };
 }
 
@@ -198,17 +199,18 @@ describe('cartExport()', () => {
 
     test('7 — AbortController abort is scheduled at 30 000 ms', async () => {
         const abortSpy = jest.fn();
-        const origAbort = AbortController;
+        let rejectFetch;
+
         global.AbortController = jest.fn().mockImplementation(() => ({
             abort: abortSpy,
             signal: 'mock-signal'
         }));
 
-        // Fetch that hangs so the timeout can fire
-        global.fetch = jest.fn().mockReturnValue(new Promise(() => {}));
+        global.fetch = jest.fn().mockReturnValue(
+            new Promise((_resolve, reject) => { rejectFetch = reject; })
+        );
 
         const component = cartExport(TEST_URL);
-        // Don't await — we want it in-flight
         const promise = component.download();
 
         // Advance just under 30s — abort must NOT have fired
@@ -219,11 +221,12 @@ describe('cartExport()', () => {
         jest.advanceTimersByTime(1);
         expect(abortSpy).toHaveBeenCalledTimes(1);
 
-        global.AbortController = origAbort;
+        // Settle the promise so the async function completes cleanly
+        rejectFetch(new DOMException('The user aborted a request.', 'AbortError'));
+        await promise;
 
-        // Clean up the pending promise (it will reject from abort but we catch it)
-        // We need fetch to reject so the promise can settle
-        // Since our mocked fetch never resolves, we can't await. Just verify the abort was called.
+        expect(component.loading).toBe(false);
+        expect(component.error).not.toBeNull();
     });
 
     test('8 — downloaded resets to false after 2 000 ms', async () => {

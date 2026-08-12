@@ -12,7 +12,13 @@
         <!-- Remove Luma export button -->
         <referenceBlock name="bluefairy.cartproducts.export" remove="true"/>
 
-        <!-- Inject Hyva Alpine.js export button into ListText actions block -->
+        <!--
+            Inject Hyva Alpine.js export button into the cart order-actions row.
+            Block name "checkout.cart.order.actions" validated against
+            hyva-themes/magento2-default-theme checkout_cart_index.xml.
+            If this block is absent in a custom theme, add an equivalent
+            referenceBlock targeting the theme's cart action area.
+        -->
         <referenceBlock name="checkout.cart.order.actions">
             <block class="Magento\Framework\View\Element\Template"
                    name="bluefairy.cartproducts.hyva.export"

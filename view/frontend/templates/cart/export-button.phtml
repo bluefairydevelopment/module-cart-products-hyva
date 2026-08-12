@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright © 2026 Blue Fairy Development. All rights reserved.
+ * Copyright © 2025 Blue Fairy Development. All rights reserved.
  *
  * Hyva Alpine.js cart export button — self-contained component.
  * Gates on canExport() — renders nothing if feature disabled or guest not allowed.
@@ -46,7 +46,9 @@ function cartExport(url) {
                     href: URL.createObjectURL(blob),
                     download: filename
                 });
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(a.href), 100);
                 this.downloaded = true;
                 setTimeout(() => { this.downloaded = false; }, 2000);
@@ -65,6 +67,7 @@ function cartExport(url) {
      class="cart-export-wrapper mt-4 mb-4">
     <button @click="download()"
             :disabled="loading"
+            :aria-busy="loading.toString()"
             type="button"
             class="btn btn-primary">
         <span x-show="!loading && !downloaded"><?= $escaper->escapeHtml(__('Export Cart')) ?></span>
