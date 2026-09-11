@@ -7,7 +7,9 @@
     ],
     "require": {
         "php": "^8.3",
-        "bluefairy/module-cart-products": "^1.0"
+        "bluefairy/module-cart-products": "^1.0",
+        "magento/framework": "^103.0.9",
+        "hyva-themes/magento2-theme-module": "^1.5"
     },
     "autoload": {
         "files": [
