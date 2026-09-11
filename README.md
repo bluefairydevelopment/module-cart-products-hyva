@@ -1,6 +1,6 @@
 # BlueFairy_CartProductsHyva
 
-Hyva theme companion for [BlueFairy_CartProducts](../CartProducts/README.md). Replaces the Luma export button with a self-contained Alpine.js component that is compatible with Hyva's full-page caching and frontend architecture.
+Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-products`). Replaces the Luma export button with a self-contained Alpine.js component that is compatible with Hyva's full-page caching and frontend architecture.
 
 ---
 
