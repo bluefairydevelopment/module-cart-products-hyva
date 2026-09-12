@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## 1.0.4 — 2026-09-11
 
 ### Fixed
 - M2MAP-257: layout file renamed `checkout_cart_index.xml` → `hyva_checkout_cart_index.xml` — the unprefixed handle applied on every theme, including Luma, injecting an Alpine.js component onto a page with no Alpine loaded
