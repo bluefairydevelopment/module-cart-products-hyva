@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Unit tests for bluefairy/module-cart-products-hyva.
+
+    Run from the package root, with MAGENTO_ROOT pointing at any Magento
+    installation whose vendor/ carries the framework:
+
+        MAGENTO_ROOT=/path/to/magento \
+            /path/to/magento/vendor/bin/phpunit -c phpunit.xml.dist
+
+    M2MAP-604. Until 1.0.6 the bootstrap here was ../../../dev/tests/unit/framework/
+    bootstrap.php, which resolves only for a module at app/code/BlueFairy/<Name>.
+    This package lives in vendor/, so the suite could not run from any install.
+    Test/Integration is deliberately NOT in the suite: it needs Magento's
+    integration framework and a database, not a mocked one.
+-->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         bootstrap="Test/bootstrap.php"
          colors="true"
-         columns="max"
-         beStrictAboutTestsThatDoNotTestAnything="false"
-         bootstrap="../../../dev/tests/unit/framework/bootstrap.php">
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         failOnWarning="true"
+         failOnRisky="true">
     <testsuites>
-        <testsuite name="Unit">
+        <testsuite name="BlueFairy_CartProductsHyva">
             <directory>Test/Unit</directory>
         </testsuite>
     </testsuites>

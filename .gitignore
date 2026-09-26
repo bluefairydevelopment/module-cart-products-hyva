@@ -4,3 +4,4 @@
 node_modules/
 .cache/
 docs/screenshots/
+.phpunit.result.cache
