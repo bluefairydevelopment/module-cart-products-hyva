@@ -6,9 +6,10 @@ Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-produc
 
 ## Requirements
 
-- Magento 2.4.8 or 2.4.9 (`magento/framework ^103.0.8`; integration-tested on 2.4.8-p5 and 2.4.9)
+- Magento 2.4.8 or 2.4.9 (`magento/framework ^103.0.8`). **On 2.4.8 it cannot be installed until the next core release:** it needs the core at 1.0.4 or later, and the released core 1.0.4 and 1.0.5 require Magento 2.4.9 (`magento/framework ^103.0.9`); the next core release lowers the core's floors to the 2.4.8 line.
+- What has been measured, on Magento 2.4.8-p5 (PHP 8.4, PHPUnit 10.5) and 2.4.9 (PHP 8.5, PHPUnit 12.5): this package's PHP unit suite, phpcs and phpstan pass; and with this package installed, the core's integration test `ExportButtonLayoutTest` renders the cart under a Hyvä theme (Hyva/default-csp) and finds this package's export block in place of the Luma one. This package has **no integration tests of its own**, and the Alpine.js component's tests (`Test/Jest`) are Jest unit tests, not a browser run.
 - PHP 8.3 or later, within what your Magento release supports (2.4.8: 8.3–8.4; 2.4.9: 8.3–8.5)
-- `BlueFairy_CartProducts` (core module — must be installed first)
+- `BlueFairy_CartProducts` **1.0.4 or later** (core module — must be installed first). Releases 1.0.4 and 1.0.5 of this package do not declare that minimum (they accept any 1.x core); if your core is older than 1.0.4, update both together: `composer require bluefairy/module-cart-products-hyva -W`.
 - Hyva Theme
 
 ---
