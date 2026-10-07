@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed — installs on Magento 2.4.8 (M2MAP-687)
+
+- **The package installs on Magento 2.4.8.** `magento/framework` was pinned at `^103.0.9` (the 2.4.9 line), so Composer refused it on 2.4.8; it is now `^103.0.8`, checked against 2.4.8-p5's `103.0.8-p5` (`hyva-themes/magento2-theme-module ^1.5` already admitted the 1.5.2 that install carries). The README says "Magento 2.4.8 or 2.4.9" instead of "2.4.x". It still needs a base `bluefairy/module-cart-products` release that installs on 2.4.8 — the next base release (base 1.0.4 and 1.0.5 require 2.4.9).
+
 ### Added — the package can now be gated from any Magento root (development only; nothing ships)
 
 - **Gate configs that run from the package root against any `MAGENTO_ROOT`** (M2MAP-604): `Test/bootstrap.php`, and `phpunit.xml.dist` pointed at it — until now it named `../../../dev/tests/unit/framework/bootstrap.php`, which resolves only for a module under `app/code/`, and this package is only ever installed into `vendor/`, so the suite could not run anywhere. Plus `phpstan.neon.dist` (level 5, analysed at the PHP 8.3 lower bound) and `phpcs.xml.dist` (the house Magento2 ruleset), which the package never had.

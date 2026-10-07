@@ -6,8 +6,8 @@ Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-produc
 
 ## Requirements
 
-- Magento 2.4.x
-- PHP 8.3+
+- Magento 2.4.8 or 2.4.9 (`magento/framework ^103.0.8`; integration-tested on 2.4.8-p5 and 2.4.9)
+- PHP 8.3 or later, within what your Magento release supports (2.4.8: 8.3–8.4; 2.4.9: 8.3–8.5)
 - `BlueFairy_CartProducts` (core module — must be installed first)
 - Hyva Theme
 
