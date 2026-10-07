@@ -12,12 +12,11 @@ use BlueFairy\CartProductsHyva\Observer\RegisterModuleForHyvaConfig;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \BlueFairy\CartProductsHyva\Observer\RegisterModuleForHyvaConfig
- */
+#[CoversClass(RegisterModuleForHyvaConfig::class)]
 class RegisterModuleForHyvaConfigTest extends TestCase
 {
     private const MODULE_NAME = 'BlueFairy_CartProductsHyva';
@@ -117,7 +116,8 @@ class RegisterModuleForHyvaConfigTest extends TestCase
         $config->method('hasData')->willReturn(false);
 
         $captured = null;
-        $config->method('setData')
+        $config->expects($this->once())
+            ->method('setData')
             ->willReturnCallback(function (string $key, array $value) use (&$captured): void {
                 $captured = $value;
             });

@@ -15,6 +15,10 @@
 
 - The requirements said "integration-tested on 2.4.8-p5 and 2.4.9". This package has no integration tests of its own. They now say what was measured on both installs — this package's PHP unit suite, phpcs and phpstan, and the core's `ExportButtonLayoutTest` run with this package installed under a Hyvä theme — that the Alpine.js tests are Jest unit tests, that 1.0.4 is the core minimum, and that on 2.4.8 the package cannot be installed until the next core release.
 
+### Changed — tests (development only; nothing ships)
+
+- `RegisterModuleForHyvaConfigTest`'s docblock `@covers` is now a `#[CoversClass]` attribute (M2MAP-650 review, R2-9): PHPUnit 12 ignores the docblock form, so the class declared no coverage target there — run with `requireCoverageMetadata="true"` on PHPUnit 12.5 all 5 tests were risky (exit 1); with the attribute, 0. `testStripsLeadingSlashFromRelativePath` now expects `setData()` exactly once, which also clears the PHPUnit 12 notice "No expectations were configured for the mock object".
+
 ### Added — the package can now be gated from any Magento root (development only; nothing ships)
 
 - **Gate configs that run from the package root against any `MAGENTO_ROOT`** (M2MAP-604): `Test/bootstrap.php`, and `phpunit.xml.dist` pointed at it — until now it named `../../../dev/tests/unit/framework/bootstrap.php`, which resolves only for a module under `app/code/`, and this package is only ever installed into `vendor/`, so the suite could not run anywhere. Plus `phpstan.neon.dist` (level 5, analysed at the PHP 8.3 lower bound) and `phpcs.xml.dist` (the house Magento2 ruleset), which the package never had.
