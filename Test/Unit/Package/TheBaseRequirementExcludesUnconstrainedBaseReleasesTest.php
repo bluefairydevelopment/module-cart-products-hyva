@@ -9,8 +9,10 @@ declare(strict_types=1);
 namespace BlueFairy\CartProductsHyva\Test\Unit\Package;
 
 use Composer\Semver\Semver;
+use Composer\Semver\VersionParser;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use UnexpectedValueException;
 
 /**
  * A SIBLING REQUIREMENT IS A CLAIM ABOUT EVERY BASE RELEASE IT ADMITS.
@@ -31,10 +33,14 @@ use RuntimeException;
  *
  * - RELEASED_BASE_FRAMEWORK, a record of every base tag's requirement, read via
  *   git on 2026-10-07. Always checked.
- * - The base repository's own git history, when one is reachable: every `v*`
- *   tag is read (`git tag`, `git show <tag>:composer.json`), the rule is applied
- *   to all of them, and the record is compared with what git says, so the record
- *   cannot drift from history. Looked for at $CART_PRODUCTS_GIT (which must then
+ * - The base repository's own git history, when one is reachable: every tag
+ *   Composer would offer as a release is read (`git tag -l`, then
+ *   `git show <tag>:composer.json`), the rule is applied to all of them, and the
+ *   record is compared with what git says, so the record cannot drift from
+ *   history. "Every tag Composer would offer" is every tag its VersionParser can
+ *   normalise, with or without a leading "v" - NOT `git tag -l 'v*'`, which is
+ *   what this read until review round 3 (L1): an unprefixed `1.0.6` tag is a
+ *   release to Composer and was invisible here. Looked for at $CART_PRODUCTS_GIT (which must then
  *   be usable), $CART_PRODUCTS_SRC, next to this repository's main checkout,
  *   and next to this package root. With none reachable (the rig's gate uploads
  *   HEAD-only clones without tags) that one test is skipped, naming where it
@@ -86,6 +92,31 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     }
 
     /**
+     * The version Composer reads out of a tag, or null when Composer would not offer the tag
+     * as a release at all. Composer's VCS repositories normalise every tag with VersionParser
+     * and skip the ones that do not parse; "v1.0.5" and "1.0.6" both parse.
+     */
+    private static function versionOfTag(string $tag): ?string
+    {
+        try {
+            return (new VersionParser())->normalize($tag);
+        } catch (UnexpectedValueException) {
+            return null;
+        }
+    }
+
+    /**
+     * The tags among $tags that Composer would offer as releases, in the order given.
+     *
+     * @param list<string> $tags
+     * @return list<string>
+     */
+    private static function releaseTags(array $tags): array
+    {
+        return array_values(array_filter($tags, static fn (string $tag): bool => self::versionOfTag($tag) !== null));
+    }
+
+    /**
      * The tags among $tagFramework that $requirement admits although they leave
      * magento/framework unconstrained.
      *
@@ -96,15 +127,29 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     {
         $admitted = [];
         foreach ($tagFramework as $tag => $framework) {
-            if (!preg_match('/^v?(\d+\.\d+\.\d+)$/', $tag, $m)) {
+            $version = self::versionOfTag((string) $tag);
+            if ($version === null) {
                 throw new RuntimeException("cannot read a version out of base tag \"$tag\"; this check would be blind");
             }
-            if (self::constrainsNothing($framework) && Semver::satisfies($m[1], $requirement)) {
-                $admitted[] = $tag;
+            if (self::constrainsNothing($framework) && Semver::satisfies($version, $requirement)) {
+                $admitted[] = (string) $tag;
             }
         }
 
         return $admitted;
+    }
+
+    /**
+     * Every tag of $repo that Composer would offer as a release - read with `git tag -l` and
+     * no pattern, so an unprefixed tag counts as much as a "v" one.
+     *
+     * @return array{0: int, 1: list<string>, 2: string} git's exit status, the release tags, stderr
+     */
+    private static function releaseTagsOf(string $repo): array
+    {
+        [$rc, $list, $err] = self::git($repo, ['tag', '-l']);
+
+        return [$rc, self::releaseTags(array_values(array_filter(array_map('trim', explode("\n", $list))))), $err];
     }
 
     /**
@@ -152,12 +197,12 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         $looked = [];
         foreach (array_values(array_unique($candidates)) as $candidate) {
             $looked[] = $candidate;
-            [$rc, $tags] = is_dir($candidate) ? self::git($candidate, ['tag', '-l', 'v*']) : [-1, ''];
-            if ($rc === 0 && trim($tags) !== '') {
+            [$rc, $tags] = is_dir($candidate) ? self::releaseTagsOf($candidate) : [-1, []];
+            if ($rc === 0 && $tags !== []) {
                 return [$candidate, $looked];
             }
             if ($candidate === $explicit) {
-                self::fail("CART_PRODUCTS_GIT=$explicit has no v* tags git can list (exit $rc)");
+                self::fail("CART_PRODUCTS_GIT=$explicit has no release tags git can list (exit $rc)");
             }
         }
 
@@ -188,14 +233,13 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         [$repo, $looked] = self::findBaseHistory();
         if ($repo === null) {
             self::markTestSkipped(
-                'no module-cart-products git history with v* tags is reachable; looked at: ' . implode(', ', $looked)
+                'no module-cart-products git history with release tags is reachable; looked at: ' . implode(', ', $looked)
                 . '. Set CART_PRODUCTS_GIT to a base clone with its tags. The recorded check still ran.'
             );
         }
 
-        [$rc, $list, $err] = self::git($repo, ['tag', '-l', 'v*']);
+        [$rc, $tags, $err] = self::releaseTagsOf($repo);
         self::assertSame(0, $rc, "git tag in $repo: $err");
-        $tags = array_values(array_filter(array_map('trim', explode("\n", $list))));
 
         [$rc, $json, $err] = self::git($repo, ['show', 'HEAD:composer.json']);
         self::assertSame(0, $rc, "git show HEAD:composer.json in $repo: $err");
@@ -234,6 +278,51 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         }
     }
 
+    /**
+     * CONTROL for review round 3, L1: the git read sees an UNPREFIXED release tag. A throwaway
+     * repository gets a "v1.0.5" tag, an unprefixed "1.0.6" tag and a "nightly" tag; the read
+     * must return the first two and not the third. `git tag -l 'v*'` - what this read was -
+     * returns only v1.0.5 and fails here.
+     */
+    public function testTheGitReadSeesUnprefixedReleaseTagsAndSkipsNonVersionTags(): void
+    {
+        $repo = sys_get_temp_dir() . '/cart-products-tags-' . bin2hex(random_bytes(6));
+        self::assertTrue(mkdir($repo), "cannot create $repo");
+        try {
+            $id = ['-c', 'user.name=tag-read-control', '-c', 'user.email=tag-read-control@invalid',
+                '-c', 'commit.gpgsign=false'];
+            foreach ([
+                ['init', '-q'],
+                [...$id, 'commit', '-q', '--allow-empty', '-m', 'control'],
+                ['tag', 'v1.0.5'],
+                ['tag', '1.0.6'],
+                ['tag', 'nightly'],
+            ] as $args) {
+                [$rc, , $err] = self::git($repo, $args);
+                self::assertSame(0, $rc, 'git ' . implode(' ', $args) . ": $err");
+            }
+
+            [$rc, $tags, $err] = self::releaseTagsOf($repo);
+            self::assertSame(0, $rc, $err);
+            sort($tags);
+            self::assertSame(['1.0.6', 'v1.0.5'], $tags);
+        } finally {
+            self::removeTree($repo);
+        }
+    }
+
+    private static function removeTree(string $dir): void
+    {
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($items as $item) {
+            $item->isDir() && !$item->isLink() ? rmdir($item->getPathname()) : unlink($item->getPathname());
+        }
+        rmdir($dir);
+    }
+
     /** CONTROLS: the predicate rejects the requirement that shipped, and reads constraints the way Composer does. */
     public function testTheCheckRejectsTheRequirementThatShippedUpTo105(): void
     {
@@ -243,6 +332,8 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         );
         self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0.4 || 1.0.3', self::RELEASED_BASE_FRAMEWORK));
         self::assertSame([], self::admittedUnconstrained('^1.0.4', self::RELEASED_BASE_FRAMEWORK));
+        self::assertSame(['1.0.6'], self::admittedUnconstrained('^1.0.4', ['1.0.6' => '*', 'v1.0.7' => '^103.0.8']));
+        self::assertSame(['v1.0.5', '1.0.6'], self::releaseTags(['v1.0.5', '1.0.6', 'nightly', 'release-candidate']));
 
         self::assertTrue(self::constrainsNothing(null));
         self::assertTrue(self::constrainsNothing('*'));

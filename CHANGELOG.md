@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Fixed — the README no longer offers 2.4.8 installs that land on the 1.0.3 releases (M2MAP-650 review round 3, M1)
+
+- The requirements said the package "cannot be installed" on 2.4.8 until the next core release. Measured, it can — on the wrong releases: with every released tag's `composer.json` resolved against 2.4.8-p5's package versions (Composer 2.10, `~/Sites/.worktrees/rig-gate-runs/20261007-194842-cart-products-composer-resolution/`), a plain `composer require bluefairy/module-cart-products-hyva` on 2.4.8 picks this package's **1.0.3 with core 1.0.3**, releases from before any Magento constraint was declared; on 2.4.9 it picks the released 1.0.4+ line. The README now says: on 2.4.8 this needs core 1.0.6+ and this package's next release, neither released yet, and the 1.0.3 releases must not be installed.
+- The older-core advice was an unpinned `composer require bluefairy/module-cart-products-hyva -W`, which on 2.4.8 resolves to the 1.0.3 releases. It is now pinned to `:^1.0.6 -W`: measured on 2.4.8 against the released tags only, the pinned require fails (exit 2) instead of falling back, and the README says not to run it unpinned. With the HEAD manifests added as the next releases (core 1.0.6, this package 1.0.6) the same resolution picks those on both 2.4.8 and 2.4.9, and with core 1.0.3 already locked the pinned `-W` command updates both to the new releases (`w-advice.log` there).
+- PHP 8.3 is admitted by `php ^8.3` but has never been run for this package (review round 3, L2): the README now says so beside the PHP line instead of leaving "8.3 or later" to read as tested.
+
+### Fixed — the base tag-history test reads unprefixed release tags too (development only; nothing ships) (M2MAP-650 review round 3, L1)
+
+- `TheBaseRequirementExcludesUnconstrainedBaseReleasesTest`'s git half listed the base's tags with `git tag -l 'v*'`. Composer offers every tag its `VersionParser` can normalise as a release, prefixed or not, so an unprefixed `1.0.6` tag on an unconstrained `composer.json` would have been a release Composer could pick and this test could not see. It now lists every tag (`git tag -l`) and keeps exactly the ones `VersionParser` normalises; versions are compared through the same parser. Seen red: against a throwaway base clone carrying a planted unprefixed `1.0.9` tag on 1.0.3's `magento/framework: "*"` (`CART_PRODUCTS_GIT` pointed at it), the old test passed and the new one fails naming `1.0.9` (`~/Sites/.worktrees/rig-gate-runs/20261007-195105-cart-products-L1-tag-read/`).
+- A new control, `testTheGitReadSeesUnprefixedReleaseTagsAndSkipsNonVersionTags`, builds a throwaway repository with `v1.0.5`, `1.0.6` and `nightly` tags and requires the read to return the first two only; with the listing put back to `'v*'` it fails (`MUTANT-v-star-listing-control.log` there). Measured with PHPUnit 12.5.37 / PHP 8.5.4 on the Mac's vanilla 2.4.9.
+
 ### Changed — installs on Magento 2.4.8 (M2MAP-687)
 
 - **The package installs on Magento 2.4.8.** `magento/framework` was pinned at `^103.0.9` (the 2.4.9 line), so Composer refused it on 2.4.8; it is now `^103.0.8`, checked against 2.4.8-p5's `103.0.8-p5` (`hyva-themes/magento2-theme-module ^1.5` already admitted the 1.5.2 that install carries). The README says "Magento 2.4.8 or 2.4.9" instead of "2.4.x". On 2.4.8 it installs only once the next base `bluefairy/module-cart-products` release is published: it now requires the base at `^1.0.4` (below), and the released base 1.0.4 and 1.0.5 require the 2.4.9 line (`magento/framework ^103.0.9`).
