@@ -42,9 +42,12 @@ use UnexpectedValueException;
  *   what this read until review round 3 (L1): an unprefixed `1.0.6` tag is a
  *   release to Composer and was invisible here. Looked for at $CART_PRODUCTS_GIT (which must then
  *   be usable), $CART_PRODUCTS_SRC, next to this repository's main checkout,
- *   and next to this package root. With none reachable (the rig's gate uploads
- *   HEAD-only clones without tags) that one test is skipped, naming where it
- *   looked; the recorded check above still runs.
+ *   and next to this package root. With none reachable (a clone of this package
+ *   alone) that one test is skipped, naming where it looked; the recorded check
+ *   above still runs. On the rig's gate it runs: since rig c2a1b94 each package
+ *   is uploaded as a git bundle carrying every tag, and the base is the sibling
+ *   clone next to this package root (gate run 20261007-215732-36460: the git
+ *   case passed on 2.4.9 and 2.4.8, not skipped).
  */
 class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
 {
