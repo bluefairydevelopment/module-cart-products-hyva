@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+### Verified (M2MAP-650 review round 6)
+- **Review round 6 final runs** are on the commit that adds this entry, all in `~/Sites/.worktrees/rig-gate-runs/20261008-s6-final/`, whose `verdicts` file records each tree's HEAD and dirt, each run's exit code and VERDICT line, and the served installs' fingerprint before and after (driver.sh there; rig ~/Sites/magento-rig main 8ec1fa3). For this package: `gate-cart`, `php83` (unit suite, phpcs and phpstan on PHP 8.3 against 2.4.8-p5 and 2.4.9 roots; `php83/summary`), `it-cart` (installed beside the core; no integration tests of its own). A release needs every one of those lines at rc=0 / VERDICT GREEN and the fingerprints EQUAL.
 
 ### Changed (M2MAP-650 review round 6)
 - **`magento/framework` is required at `~103.0.8` (was `^103.0.8`), and the README's Requirements name the
@@ -14,6 +16,7 @@
   releases admitted, 2.4.7-p5 / 2.4.6 / 2.4.0 / 103.1 / 104 refused, the README quoting the constraint and naming
   2.4.10. Red first, logs in `~/Sites/.worktrees/rig-gate-runs/20261008-s7-manifest-cart-oc/`: `red-1-tests-only-*`
   (old manifest and README: 2 failures), `green-*`, `mutant-widen-103.1-*` (`~103.0.8 || ^103.1` planted: red).
+- **The PHP lines say what was measured, PHP 8.3 included** (M2MAP-650 review round 6, S6 item 1). They said PHP 8.3 was admitted but not run. It has now been run: this package's PHP unit suite, phpcs and phpstan on PHP 8.3.35 against private 8.3-resolved copies of 2.4.8-p5 (PHPUnit 10.5) and 2.4.9 (PHPUnit 12.5), every line rc=0 (`~/Sites/.worktrees/rig-gate-runs/20261008-s6-php83/s7-rerun-154809/summary`; the exploratory `explore-run-152846/` beside it was red only because its clones had no `core.hooksPath` and jira had no sibling checkouts, both fixed in `s6-php83.sh`). The integration suite has not been run on PHP 8.3, and the text says so. Changed: README Requirements.
 
 ### Changed (licence)
 - Licence: the independent-contractor clause is reworded; it now reads "Nothing in this Agreement creates a joint venture, agency, franchise or employment relationship". The meaning is unchanged (each party remains an independent contractor). (M2MAP-650)
