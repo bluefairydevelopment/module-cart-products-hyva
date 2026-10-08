@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+
+### Changed (M2MAP-650 review round 6)
+- **`magento/framework` is required at `~103.0.8` (was `^103.0.8`), and the README's Requirements name the
+  releases it still admits that nobody has run** (M2MAP-650 review round 6, S6 item 5; the small repos' LOW-7
+  cure carried here). `^103.0.8` also admitted a 103.1 framework, and nothing pinned the constraint at all.
+  `~103.0.8` (>= 103.0.8, < 103.1.0) refuses 103.1; it still admits 103.0.10 and up (a future 2.4.10), and is
+  not capped below it, because that would make Composer refuse a merchant's Magento upgrade to 2.4.10 until this
+  package is released again (the parent's decision of 2026-10-08). So the README says so. Pinned by the new
+  `Test/Unit/Package/TheManifestAdmitsOnlyTheMeasuredMagentoReleasesTest` (the small repos' test): measured
+  releases admitted, 2.4.7-p5 / 2.4.6 / 2.4.0 / 103.1 / 104 refused, the README quoting the constraint and naming
+  2.4.10. Red first, logs in `~/Sites/.worktrees/rig-gate-runs/20261008-s7-manifest-cart-oc/`: `red-1-tests-only-*`
+  (old manifest and README: 2 failures), `green-*`, `mutant-widen-103.1-*` (`~103.0.8 || ^103.1` planted: red).
+
 ### Changed (licence)
 - Licence: the independent-contractor clause is reworded; it now reads "Nothing in this Agreement creates a joint venture, agency, franchise or employment relationship". The meaning is unchanged (each party remains an independent contractor). (M2MAP-650)
 
