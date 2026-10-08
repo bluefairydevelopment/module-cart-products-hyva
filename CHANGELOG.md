@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed (licence)
+- Licence: the independent-contractor clause is reworded; it now reads "Nothing in this Agreement creates a joint venture, agency, franchise or employment relationship". The meaning is unchanged (each party remains an independent contractor). (M2MAP-650)
+
 ### Fixed — the README no longer offers 2.4.8 installs that land on the 1.0.3 releases (M2MAP-650 review round 3, M1)
 
 - The requirements said the package "cannot be installed" on 2.4.8 until the next core release. Measured, it can — on the wrong releases: with every released tag's `composer.json` resolved against 2.4.8-p5's package versions (Composer 2.10, `~/Sites/.worktrees/rig-gate-runs/20261007-194842-cart-products-composer-resolution/`), a plain `composer require bluefairy/module-cart-products-hyva` on 2.4.8 picks this package's **1.0.3 with core 1.0.3**, releases from before any Magento constraint was declared; on 2.4.9 it picks the released 1.0.4+ line. The README now says: on 2.4.8 this needs core 1.0.6+ and this package's next release, neither released yet, and the 1.0.3 releases must not be installed.
