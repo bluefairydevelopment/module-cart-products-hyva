@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Verified (M2MAP-650 review round 6)
-- **Review round 6 final runs** are on the commit that adds this entry, all in `~/Sites/.worktrees/rig-gate-runs/20261008-s6-final/`, whose `verdicts` file records each tree's HEAD and dirt, each run's exit code and VERDICT line, and the served installs' fingerprint before and after (driver.sh there; rig ~/Sites/magento-rig main 8ec1fa3). For this package: `gate-cart`, `php83` (unit suite, phpcs and phpstan on PHP 8.3 against 2.4.8-p5 and 2.4.9 roots; `php83/summary`), `it-cart` (installed beside the core; no integration tests of its own). A release needs every one of those lines at rc=0 / VERDICT GREEN and the fingerprints EQUAL.
+- **Review round 6 final runs** are on the commit that adds this entry, all in `~/Sites/.worktrees/rig-gate-runs/20261008-s7-cart-final/` (the cart trio was re-run there after its tags v1.0.0-v1.0.2 were deleted; the small repos, jira, Recipes and Order Comments are in `20261008-s6-final/`), whose `verdicts` file records each tree's HEAD and dirt, each run's exit code and VERDICT line, and the served installs' fingerprint before and after (driver.sh there; rig ~/Sites/magento-rig main 8ec1fa3). For this package: `gate-cart`, `php83` (unit suite, phpcs and phpstan on PHP 8.3 against 2.4.8-p5 and 2.4.9 roots; `php83/summary`), `it-cart` (installed beside the core; no integration tests of its own). A release needs every one of those lines at rc=0 / VERDICT GREEN and the fingerprints EQUAL.
 
 ### Changed (M2MAP-650 review round 6)
 - **`magento/framework` is required at `~103.0.8` (was `^103.0.8`), and the README's Requirements name the
