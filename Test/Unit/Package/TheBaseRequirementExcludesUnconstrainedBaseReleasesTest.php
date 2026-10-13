@@ -164,6 +164,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
      */
     private static function git(string $repo, array $args): array
     {
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         $process = proc_open(
             array_merge(['git', '-C', $repo], $args),
             [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
@@ -177,6 +178,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         fclose($pipes[1]);
         fclose($pipes[2]);
 
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         return [proc_close($process), $out, $err];
     }
 

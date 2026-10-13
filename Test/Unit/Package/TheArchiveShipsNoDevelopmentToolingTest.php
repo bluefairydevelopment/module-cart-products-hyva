@@ -63,6 +63,7 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
      */
     private static function archivedPaths(): array
     {
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         $process = proc_open(
             ['git', '-C', self::root(), 'archive', '--format=tar', '--worktree-attributes', 'HEAD'],
             [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
@@ -75,6 +76,7 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
         $err = (string) stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         $rc = proc_close($process);
         self::assertSame(0, $rc, "git archive failed in " . self::root() . ": $err");
 

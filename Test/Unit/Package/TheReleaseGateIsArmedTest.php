@@ -43,6 +43,7 @@ class TheReleaseGateIsArmedTest extends TestCase
         $status = 0;
         $command = 'cd ' . escapeshellarg(self::root()) . ' && git '
             . implode(' ', array_map('escapeshellarg', $args)) . ' 2>&1';
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         exec($command, $out, $status);
         if ($status !== 0) {
             throw new RuntimeException('git ' . implode(' ', $args) . " exited {$status}: " . implode("\n", $out));
@@ -132,6 +133,7 @@ class TheReleaseGateIsArmedTest extends TestCase
         // diagnosis.
         $out = [];
         $status = 0;
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
         exec('cd ' . escapeshellarg(self::root()) . ' && git config core.hooksPath 2>&1', $out, $status);
         if ($status !== 0 && $status !== 1) {
             throw new RuntimeException("git config core.hooksPath exited {$status}: " . implode("\n", $out));
