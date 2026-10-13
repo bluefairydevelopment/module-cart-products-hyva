@@ -59,13 +59,16 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     /**
      * Every released base tag => its composer.json `require.magento/framework`
      * (null = not declared). Read via git on 2026-10-07 from module-cart-products.
-     * v1.0.0's composer.json names the package blue-fairy/module-cart-products; it is
-     * kept, because counting it can only make the check stricter.
+     *
+     * Tags v1.0.0, v1.0.1 and v1.0.2 were DELETED on 2026-10-08 (Jennifer's decision:
+     * superseded, never install), on GitHub and in the local clones, so they are no
+     * longer releases Composer can offer and are no longer recorded here: the git
+     * comparison below fails on a record naming a tag the history does not have
+     * (seen red with them still listed: rig-gate-runs/20261008-s7-cart-tags/). v1.0.3
+     * stays, with `magento/framework: "*"` - the unconstrained release this rule must
+     * still exclude, and the case that keeps the recorded check able to fail.
      */
     private const RELEASED_BASE_FRAMEWORK = [
-        'v1.0.0' => '*',
-        'v1.0.1' => '*',
-        'v1.0.2' => '*',
         'v1.0.3' => '*',
         'v1.0.4' => '^103.0.9',
         'v1.0.5' => '^103.0.9',
@@ -329,10 +332,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     /** CONTROLS: the predicate rejects the requirement that shipped, and reads constraints the way Composer does. */
     public function testTheCheckRejectsTheRequirementThatShippedUpTo105(): void
     {
-        self::assertSame(
-            ['v1.0.0', 'v1.0.1', 'v1.0.2', 'v1.0.3'],
-            self::admittedUnconstrained('^1.0', self::RELEASED_BASE_FRAMEWORK)
-        );
+        self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0', self::RELEASED_BASE_FRAMEWORK));
         self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0.4 || 1.0.3', self::RELEASED_BASE_FRAMEWORK));
         self::assertSame([], self::admittedUnconstrained('^1.0.4', self::RELEASED_BASE_FRAMEWORK));
         self::assertSame(['1.0.6'], self::admittedUnconstrained('^1.0.4', ['1.0.6' => '*', 'v1.0.7' => '^103.0.8']));
