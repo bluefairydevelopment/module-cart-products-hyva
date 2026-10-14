@@ -12,3 +12,8 @@ phpunit.xml.dist export-ignore
 phpstan.neon.dist export-ignore
 phpcs.xml.dist export-ignore
 .githooks/ export-ignore
+# The Jest harness for the Alpine.js component (M2MAP-650 review round 3, R3-8): no Magento
+# install runs it. TheArchiveShipsNoDevelopmentToolingTest reads the archive itself.
+jest.config.js export-ignore
+package.json export-ignore
+package-lock.json export-ignore

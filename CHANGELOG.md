@@ -1,14 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 — 2026-10-14
 
-### Added — the package can now be gated from any Magento root (development only; nothing ships)
+### Changed
+- **Installs on Magento 2.4.8 as well as 2.4.9.** The framework requirement is now `magento/framework ~103.0.8` (was `^103.0.9`), which refuses a 103.1 framework and admits later 2.4 releases from framework 103.0.10 up.
+- **Requires `bluefairy/module-cart-products` 1.1.0 or later (was 1.0.4 or later).** If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W`.
+- README Requirements state the supported Magento releases (2.4.8, 2.4.9) and PHP versions (8.3 or later within what your Magento release supports), and what has been tested on each.
+- Licence: the independent-contractor clause is reworded; the meaning is unchanged.
 
-- **Gate configs that run from the package root against any `MAGENTO_ROOT`** (M2MAP-604): `Test/bootstrap.php`, and `phpunit.xml.dist` pointed at it — until now it named `../../../dev/tests/unit/framework/bootstrap.php`, which resolves only for a module under `app/code/`, and this package is only ever installed into `vendor/`, so the suite could not run anywhere. Plus `phpstan.neon.dist` (level 5, analysed at the PHP 8.3 lower bound) and `phpcs.xml.dist` (the house Magento2 ruleset), which the package never had.
-- **`.githooks/pre-push`, tracked** (M2MAP-589). On a tag push it refuses unless the tag names `HEAD` with a clean tree, then runs `composer validate`, phpunit, phpcs and phpstan against `MAGENTO_ROOT` and refuses on any non-zero exit. One line per clone: `git config core.hooksPath .githooks`; `TheReleaseGateIsArmedTest` fails the suite until that is done. `.githooks/` is export-ignored.
-- **First measurements, 2026-09-25, local Hyvä root (Magento 2.4.9, PHP 8.5, base 1.0.3 installed):** phpunit 21 tests / 70 assertions exit 0; phpcs 7 files, 0 errors, 0 warnings; phpstan level 5, 0 errors. Each gate was seen red on a plant first, and the hook refused a tag push over a planted red test.
-- **`TailwindScansThisPackagesTemplatesTest`** (M2MAP-608), ported from module-jira-hyva. `view/frontend/tailwind/module.css` has carried the `@source` glob over this package's templates since M2MAP-229; nothing pinned it. The test strips comments before looking (module-jira-hyva shipped a file whose only `@source` was in a comment), checks that the glob reaches every shipped template, and carries controls for each of those. Seen red with the `@source` line blanked.
-- **Served-stylesheet measurement, 2026-09-25, local Hyvä box** (theme `Blue/bluefairy`, compiled `web/css/styles.css`): the template uses 8 class tokens; 7 are utilities and all 7 have rules; the 8th, `cart-export-wrapper`, is a selector hook with no styling of its own. The check was proved able to fail against a stylesheet stripped of those rules (8 of 8 missing). Honest limit: every utility here (`mt-4`, `btn-primary`, `text-sm`…) is also used elsewhere in the theme, so today the glob contributes no class that only this package uses — the test above is what keeps it that way when one is added.
+### Fixed
+- The Jest harness for the Alpine.js component (`jest.config.js`, `package.json`, `package-lock.json`) no longer ships in the package archive.
 
 ## 1.0.5 — 2026-09-18
 

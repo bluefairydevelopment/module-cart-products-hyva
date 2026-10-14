@@ -45,6 +45,7 @@ if ($magentoRoot === '' || !is_file($magentoRoot . '/vendor/autoload.php')) {
         . "These tests mock Magento classes, so the framework has to be loadable:\n"
         . "  MAGENTO_ROOT=/path/to/magento /path/to/magento/vendor/bin/phpunit -c phpunit.xml.dist\n"
     );
+    // phpcs:ignore Magento2.Security.LanguageConstruct -- a test bootstrap that refuses to run exits non-zero; the exit is the refusal
     exit(1);
 }
 
@@ -79,6 +80,7 @@ foreach (['Magento/Catalog/Api/Data/ProductExtensionInterface.php'] as $sentinel
             $magentoRoot,
             $magentoRoot
         ));
+        // phpcs:ignore Magento2.Security.LanguageConstruct -- a test bootstrap that refuses to run exits non-zero; the exit is the refusal
         exit(1);
     }
 }
@@ -136,6 +138,7 @@ if ($ownUnresolved !== [] && $underAnalyser) {
         implode("\n  ", $ownUnresolved),
         $magentoRoot
     ));
+    // phpcs:ignore Magento2.Security.LanguageConstruct -- a test bootstrap that refuses to run exits non-zero; the exit is the refusal
     exit(1);
 }
 
@@ -170,6 +173,7 @@ spl_autoload_register(static function (string $class) use ($composerLoader): voi
     $nsDecl    = $namespace === '' ? '' : sprintf('namespace %s;', $namespace);
 
     if ($isExtension) {
+        // phpcs:ignore Magento2.Security.InsecureFunction,Squiz.PHP.Eval -- test bootstrap only: declares an empty stand-in for a generated class the Magento root lacks; the code is built from the class name alone
         eval(sprintf('%s interface %s {}', $nsDecl, $shortName));
         return;
     }
@@ -177,10 +181,12 @@ spl_autoload_register(static function (string $class) use ($composerLoader): voi
     if ($isExtData) {
         $iface      = $class . 'Interface';
         $implements = (interface_exists($iface) || class_exists($iface)) ? ' implements \\' . $iface : '';
+        // phpcs:ignore Magento2.Security.InsecureFunction,Squiz.PHP.Eval -- test bootstrap only: declares an empty stand-in for a generated class the Magento root lacks; the code is built from the class name alone
         eval(sprintf('%s class %s%s {}', $nsDecl, $shortName, $implements));
         return;
     }
 
+    // phpcs:ignore Magento2.Security.InsecureFunction,Squiz.PHP.Eval -- test bootstrap only: declares an empty stand-in for a generated class the Magento root lacks; the code is built from the class name alone
     eval(sprintf(
         '%s class %s { public function create(array $data = []) { return null; } }',
         $nsDecl,

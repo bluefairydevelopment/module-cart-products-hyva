@@ -2,7 +2,7 @@ BLUE FAIRY DEVELOPMENT LLC
 END USER LICENSE AGREEMENT
 
 Cart Export for Adobe Commerce and Magento Open Source
-Version 1.0.5
+Version 1.1.0
 
 Copyright (c) Blue Fairy Development LLC, a Texas limited liability company.
 All rights reserved.
@@ -34,8 +34,8 @@ traffic and does not process real orders.
 
 "Reseller" means an agency, integrator or consultant engaged by the Licensee,
 or authorized by the Licensor to resell the Software. Each party acts as an
-independent contractor. Nothing in this Agreement creates a partnership, joint
-venture, agency, franchise or employment relationship between the Licensor and
+independent contractor. Nothing in this Agreement creates a joint venture,
+agency, franchise or employment relationship between the Licensor and
 any Reseller or Licensee, and neither may bind or incur any obligation on
 behalf of the other.
 

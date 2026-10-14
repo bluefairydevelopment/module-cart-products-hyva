@@ -33,7 +33,6 @@
 
     <file>.</file>
 
-    <exclude-pattern>*/Test/*</exclude-pattern>
     <exclude-pattern>*/docs/*</exclude-pattern>
     <exclude-pattern>*/docs-build/*</exclude-pattern>
     <exclude-pattern>*/.idea/*</exclude-pattern>
