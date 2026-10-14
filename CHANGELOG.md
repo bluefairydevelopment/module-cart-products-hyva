@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.0.6 — 2026-10-14
+## 1.1.0 — 2026-10-14
 
 ### Changed
 - **Installs on Magento 2.4.8 as well as 2.4.9.** The framework requirement is now `magento/framework ~103.0.8` (was `^103.0.9`), which refuses a 103.1 framework and admits later 2.4 releases from framework 103.0.10 up.
-- **Requires `bluefairy/module-cart-products` 1.0.4 or later (was any 1.x release)**; on Magento 2.4.8 use core 1.0.6 or later. If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.0.6 -W`.
+- **Requires `bluefairy/module-cart-products` 1.1.0 or later (was 1.0.4 or later).** If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W`.
 - README Requirements state the supported Magento releases (2.4.8, 2.4.9) and PHP versions (8.3 or later within what your Magento release supports), and what has been tested on each.
 - Licence: the independent-contractor clause is reworded; the meaning is unchanged.
 

@@ -5,7 +5,7 @@
  *
  * Unit-test and static-analysis bootstrap for bluefairy/module-cart-products-hyva.
  *
- * M2MAP-604. Until 1.0.6 this package's phpunit.xml.dist named
+ * M2MAP-604. Until 1.1.0 this package's phpunit.xml.dist named
  * `../../../dev/tests/unit/framework/bootstrap.php` - a path that exists only when
  * the module sits at app/code/BlueFairy/<Name> inside a Magento install. This
  * package is only ever installed into vendor/, and Test/ is export-ignored from
