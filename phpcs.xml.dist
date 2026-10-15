@@ -7,8 +7,7 @@
     (flag name written without its two leading hyphens above, because a literal
     double hyphen inside an XML comment is rejected by phpcs' parser.)
 
-    Exclusions mirror the house ruleset (Printify, product-grid-export, jira,
-    contact-success): docblock-format opinions and pure formatting sniffs that
+    Exclusions follow the house ruleset: docblock-format opinions and pure formatting sniffs that
     phpcbf can rewrite without changing behaviour. Nothing here suppresses a sniff
     that could hide a real defect; EmptyBlock and DiscouragedFunction are
     deliberately NOT excluded for that reason.

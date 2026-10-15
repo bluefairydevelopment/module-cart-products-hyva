@@ -126,15 +126,21 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
     }
 
     /** @return list<string> the kinds of development history the text carries */
-    private static function historyHits(string $text): array
+    private static function historyHits(string $text, bool $strict = true): array
     {
         // Assembled from parts so that this file does not match its own patterns.
         $markers = [
             'ticket key' => '/\b(?:M2' . 'MAP|WP' . 'MAP|BFD' . 'SH|BFD' . 'PROD)-\d+/',
             'review vocabulary' => '/(?<!read as )\b(?:cure[ds]?|mutation-verified|review round|multi-agent|estate|bin\/rig)\b/',
             'local path' => '#/Users/|/private/tmp|~/Sites#',
+            'rig or certification' => '/\\brig\\b|\\b(?:rig|certification) gate\\b|MEASURED/',
+            'test site name' => '/(?<![-\\/])\\bluma\\b(?![-.])/',
             'person or session' => '/Jennifer|\bthe parent(?:\'s)? (?:decision|session)\b/',
         ];
+        if (!$strict) {
+            // Existing test files may use rig and Luma vocabulary; the wider patterns cover the rest.
+            unset($markers['rig or certification'], $markers['test site name']);
+        }
         $hits = [];
         foreach ($markers as $name => $pattern) {
             if (preg_match($pattern, $text, $match) === 1) {
@@ -155,7 +161,7 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
                 continue;
             }
             $examined++;
-            foreach (self::historyHits((string) file_get_contents(self::root() . '/' . $relative)) as $hit) {
+            foreach (self::historyHits((string) file_get_contents(self::root() . '/' . $relative), !str_starts_with($relative, 'Test/')) as $hit) {
                 $hits[] = $relative . ' (' . $hit . ')';
             }
         }
@@ -167,6 +173,10 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
     public function testTheHistoryPatternsFireOnASpecimenOfEachKind(): void
     {
         self::assertCount(4, self::historyHits('See M2' . 'MAP-1, a cure round, /Users/x, Jennifer.'));
+        self::assertCount(1, self::historyHits('Run on the rig.'));
+        self::assertCount(1, self::historyHits('MEASURED on a box.'));
+        self::assertCount(1, self::historyHits('the luma site'));
+        self::assertSame([], self::historyHits('Luma Cart and luma-cart-export-button.png'));
         self::assertSame([], self::historyHits('A clean sentence about a cart export.'));
     }
 }
