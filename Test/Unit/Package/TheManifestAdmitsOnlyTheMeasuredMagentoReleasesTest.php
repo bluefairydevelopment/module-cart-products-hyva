@@ -47,7 +47,7 @@ class TheManifestAdmitsOnlyTheMeasuredMagentoReleasesTest extends TestCase
      * release on framework 103.0.10 or above (none released yet). Each must be named in every README's
      * Requirements, beside the constraint itself.
      */
-    private const ADMITTED_NOT_RUN = ['2.4.10' => '103.0.10'];
+    private const ADMITTED_NOT_RUN = [];
 
     /** README files (relative to the package root) whose Requirements section a merchant reads. */
     private const READMES = [

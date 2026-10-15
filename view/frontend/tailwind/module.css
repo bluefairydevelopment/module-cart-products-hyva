@@ -14,7 +14,7 @@
  * theme's CSS (`npm run build` in the theme's web/tailwind directory).
  *
  * No @source inline(...) safelist is needed here — this module's templates
- * use no x-bind:class expressions (0 occurrences, measured), so the glob
+ * use no x-bind:class expressions (0 occurrences), so the glob
  * below is sufficient on its own.
  */
 

@@ -135,11 +135,12 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
             'local path' => '#/Users/|/private/tmp|~/Sites#',
             'rig or certification' => '/\\brig\\b|\\b(?:rig|certification) gate\\b|MEASURED/',
             'test site name' => '/(?<![-\\/])\\bluma\\b(?![-.])/',
+            'narration' => '/\\b(?:measured on|measurement|tried first|this ticket|lesson|observed|learned)\\b|\\bused to (?:carry|install|find|be|read)\\b/i',
             'person or session' => '/Jennifer|\bthe parent(?:\'s)? (?:decision|session)\b/',
         ];
         if (!$strict) {
             // Existing test files may use rig and Luma vocabulary; the wider patterns cover the rest.
-            unset($markers['rig or certification'], $markers['test site name']);
+            unset($markers['rig or certification'], $markers['test site name'], $markers['narration']);
         }
         $hits = [];
         foreach ($markers as $name => $pattern) {
@@ -174,8 +175,12 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
     {
         self::assertCount(4, self::historyHits('See M2' . 'MAP-1, a cure round, /Users/x, Jennifer.'));
         self::assertCount(1, self::historyHits('Run on the rig.'));
-        self::assertCount(1, self::historyHits('MEASURED on a box.'));
+        self::assertCount(2, self::historyHits('MEASURED on a box.'));
         self::assertCount(1, self::historyHits('the luma site'));
+        self::assertCount(1, self::historyHits('Measured on the local store.'));
+        self::assertCount(1, self::historyHits('What was tried first, and the lesson.'));
+        self::assertCount(1, self::historyHits('The log line used to carry the message.'));
+        self::assertCount(1, self::historyHits('the attribute this ticket exists for'));
         self::assertSame([], self::historyHits('Luma Cart and luma-cart-export-button.png'));
         self::assertSame([], self::historyHits('A clean sentence about a cart export.'));
     }

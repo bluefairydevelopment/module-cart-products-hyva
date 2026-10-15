@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **The documentation names the block the button is injected into.** The README and Features Guide said the Alpine.js button is injected into `checkout.cart.form`; the layout injects it into `checkout.cart.order.actions`, the cart's order-actions row (`checkout.cart.form` is where the Luma button from the core module sits). Both documents now say so, and the README says what to do when a custom theme has no such block.
+- The Requirements section states the supported Magento and PHP releases and the core version this package needs, without test-run detail.
 - The README Requirements state the Hyvä theme module the package requires (`hyva-themes/magento2-theme-module` `^1.5`).
 - Comments in the shipped layout, events and Tailwind source files were reworded; no behaviour changed.
 

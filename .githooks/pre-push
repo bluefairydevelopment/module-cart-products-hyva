@@ -10,7 +10,7 @@
 #
 #   2. A TAG push must pass this package's own gates FIRST, and every tag pushed
 #      must name HEAD with a clean working tree - the gates read the working tree,
-#      and a tag on any other commit would publish bytes nobody measured.
+#      and a tag on any other commit would publish bytes nobody tested.
 #      Composer validate, phpunit, phpcs and phpstan run against the tree being tagged
 #      and ANY non-zero exit refuses the push. Exit codes are read, never output.
 #
@@ -27,7 +27,7 @@
 # refuses a tag push without MAGENTO_ROOT rather than run the gates against
 # nothing: a phpstan run over an uncompiled root reports 0 for the wrong reason
 # and a release gate must say which
-# install it measured.
+# install it ran against.
 #
 # phpcs GETS NO PATH ARGUMENT: phpcs.xml.dist names `.` itself and excludes Test/,
 # docs/ and node_modules/. Warnings are part of the gate - the ruleset excludes only
