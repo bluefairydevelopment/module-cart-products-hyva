@@ -51,6 +51,28 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
         'view/frontend/templates/cart/export-button.phtml',
     ];
 
+    /**
+     * The environment for every git child process: this one with each GIT_* variable removed
+     * except GIT_EXEC_PATH. The release gate runs this suite INSIDE a git hook, where GIT_DIR /
+     * GIT_WORK_TREE / GIT_INDEX_FILE name the REAL repository; a scratch repository that inherits
+     * them commits, tags and configures the real one (M2MAP-687; a junk commit landed in the real
+     * module-cart-products-graphql repo that way). Read on every call, never cached.
+     *
+     * @return array<string, string>
+     */
+    private static function cleanEnv(): array
+    {
+        $env = [];
+        foreach (getenv() as $name => $value) {
+            if (str_starts_with((string) $name, 'GIT_') && $name !== 'GIT_EXEC_PATH') {
+                continue;
+            }
+            $env[(string) $name] = (string) $value;
+        }
+
+        return $env;
+    }
+
     private static function root(): string
     {
         return dirname(__DIR__, 3);
@@ -67,7 +89,9 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
         $process = proc_open(
             ['git', '-C', self::root(), 'archive', '--format=tar', '--worktree-attributes', 'HEAD'],
             [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-            $pipes
+            $pipes,
+            null,
+            self::cleanEnv()
         );
         if (!is_resource($process)) {
             throw new RuntimeException('cannot start git');
