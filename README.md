@@ -42,11 +42,11 @@ The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/ex
 
 | Concern | Luma approach | Hyva approach |
 |---------|---------------|---------------|
-| Form key | `$block->getFormKey()` in uncached block | `window.hyva.getFormKey()` at runtime |
+| Form key | `formkey` block inside an uncached block | `window.hyva.getFormKey()` at runtime |
 | JavaScript | Inline `<script>` with vanilla `fetch()` | Alpine.js `x-data` component |
 | URL escaping | `$escaper->escapeUrl()` | `$escaper->escapeHtmlAttr()` (in `x-data` attribute) |
 | State management | DOM manipulation | Alpine.js reactive properties (`loading`, `downloaded`, `error`) |
-| Flash prevention | CSS classes | `x-cloak` directive |
+| Flash prevention | CSS (the error message is hidden by default) | `x-cloak` directive |
 
 ---
 
@@ -54,7 +54,7 @@ The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/ex
 
 This module has no separate configuration. It inherits all settings from the core module:
 
-- **Stores > Configuration > Sales > Cart Export**
+- **Stores → Configuration → Sales → Cart Export**
 
 The `canExport()` ViewModel gate controls whether the button renders. If the feature is disabled or the user is a guest without permission, the template outputs nothing.
 

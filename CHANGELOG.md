@@ -34,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The layout file is renamed from `checkout_cart_index.xml` to `hyva_checkout_cart_index.xml`. The unprefixed handle applied on every theme, including Luma, and injected an Alpine.js component onto a page with no Alpine loaded.
 - The module was never registered with Hyvä's Tailwind build (`view/frontend/tailwind/module.css` plus `Observer/RegisterModuleForHyvaConfig.php`, observing `hyva_config_generate_before`), so its utility classes were silently dropped from the compiled CSS. It is registered now.
-- Added PHP unit test coverage (`phpunit.xml.dist` and `Test/Unit/Observer/RegisterModuleForHyvaConfigTest.php`); the package previously had Jest tests only.
 - The README opened with a link to `../CartProducts/README.md`, which does not exist. The link is removed.
 
 ### Changed
@@ -43,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 1.0.3 — 2026-08-12
 
 ### Changed
-- Fixed the Jest `makeResponse` helper, which overwrote the computed headers object.
+- No change for merchants.
 
 ## 1.0.0 — 2026-04-09
 
@@ -57,6 +56,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `X-Filename` response header support for dynamic CSV filename, with `cart.csv` fallback
 - Module declaration (`etc/module.xml`) with sequence dependencies on `BlueFairy_CartProducts` and `Hyva_Theme`
 - Composer package `bluefairy/module-cart-products-hyva` requiring PHP 8.3+ and `bluefairy/module-cart-products ^1.0`
-- Jest unit test suite covering all component states, timeout, filename fallback, blob cleanup, and CSRF token injection
 - `README.md` with installation instructions, architecture comparison (Luma vs. Hyva), component API, button states, and troubleshooting guide
 - `FEATURES.md` user-facing feature walkthrough with layout behaviour table

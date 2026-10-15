@@ -88,9 +88,37 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
         $system = simplexml_load_string((string) file_get_contents($core . '/etc/adminhtml/system.xml'));
         self::assertInstanceOf(\SimpleXMLElement::class, $system);
         $section = $system->system->section;
-        $path = 'Stores > Configuration > ' . ucfirst((string) $section->tab) . ' > ' . (string) $section->label;
+        $path = 'Stores → Configuration → ' . ucfirst((string) $section->tab) . ' → ' . (string) $section->label;
 
         self::assertStringContainsString($path, self::read('README.md'));
+    }
+
+    public function testConfigurationLocationsUseTheHouseShorthand(): void
+    {
+        $checked = 0;
+        foreach (['README.md', 'FEATURES.md', 'CHANGELOG.md', 'docs/MARKETING.txt'] as $file) {
+            if (!is_file(self::root() . '/' . $file)) {
+                continue;
+            }
+            foreach (explode("\n", self::read($file)) as $number => $line) {
+                $checked++;
+                $where = $file . ':' . ($number + 1) . ': ' . $line;
+                // A configuration location is always written Stores → Configuration → <tab> → <section>.
+                self::assertDoesNotMatchRegularExpression('/Stores\s*>\s*Configuration/', $line, $where);
+                // The long form is the Role Resources tree path, and only appears when it says so.
+                if (preg_match('/Stores\s*(?:>|→)\s*Settings\s*(?:>|→)\s*Configuration/', $line) === 1) {
+                    self::assertMatchesRegularExpression('/Role Resources|role-resource/i', $line, $where);
+                }
+            }
+        }
+        self::assertGreaterThan(50, $checked);
+    }
+
+    public function testTheShorthandCheckRejectsTheLongAndAngleBracketForms(): void
+    {
+        self::assertSame(1, preg_match('/Stores\s*>\s*Configuration/', 'Navigate to Stores > Configuration > Sales'));
+        self::assertSame(0, preg_match('/Stores\s*>\s*Configuration/', 'Navigate to Stores → Configuration → Sales'));
+        self::assertSame(1, preg_match('/Stores\s*(?:>|→)\s*Settings\s*(?:>|→)\s*Configuration/', 'Open Stores → Settings → Configuration'));
     }
 
     public function testTheLicenceVersionIsTheNewestChangelogHeading(): void
