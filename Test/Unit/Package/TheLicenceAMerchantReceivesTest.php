@@ -17,21 +17,16 @@ use PHPUnit\Framework\TestCase;
  * redistributed derivative to be licensed under the GPL too — while
  * `composer.json` declared `"license": ["proprietary"]`. The two statements
  * contradicted each other and the open one was the one in the merchant's
- * `vendor/` directory. Found in the estate-wide sweep recorded in
- * module-jira-hyva's own version of this test (2026-09-11): "3 declare
- * proprietary, ship the GNU GPL (cart-products x3)" — this package was one of
- * the three, and its two companions (`-graphql`, `-hyva`) share the fix.
+ * `vendor/` directory. This package and its two companions (`-graphql`,
+ * `-hyva`) share the fix.
  *
  * Nothing here is a legal opinion; this test asserts only that the two
  * declarations agree and that the shipped text is the house instrument.
- *
- * Ported from module-jira-hyva's `TheLicenceAMerchantReceivesTest.php`, the
- * reference cure for this exact defect shape (M2MAP-500 lineage).
  */
 class TheLicenceAMerchantReceivesTest extends TestCase
 {
     /**
-     * Grant language from the licences actually found in this estate. Matching
+     * Grant language from common open-source licences. Matching
      * any of these means the shipped text gives the merchant rights the sale does
      * not.
      */
@@ -171,8 +166,7 @@ class TheLicenceAMerchantReceivesTest extends TestCase
         self::assertSame(
             2,
             $hits,
-            'the open-source-grant predicates do not match the exact OSL-3.0 header other packages '
-            . 'in this estate shipped — so their absence from the real file proves nothing'
+            'the open-source-grant predicates do not match an OSL-3.0 header, so their absence from the real file proves nothing'
         );
 
         $gpl = 'GNU GENERAL PUBLIC LICENSE Version 3';

@@ -12,20 +12,17 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
- * M2MAP-589 / M2MAP-546. NOTHING RAN THIS PACKAGE'S GATES BEFORE A TAG.
+ * THE PACKAGE'S GATES MUST RUN BEFORE A TAG.
  *
- * The pre-push hook that does is `.githooks/pre-push`. Until this change the package
- * had no hook of its own: a hand-copied shared one in `.git/hooks` checked only
- * for a CHANGELOG heading, and "no hook" was the default state of a fresh clone.
- * This test holds the three facts that decide whether the
+ * The pre-push hook that runs them is `.githooks/pre-push`; a fresh clone has no hook
+ * until it is wired. This test holds the three facts that decide whether the
  * gate exists at all: the hook is TRACKED, it RUNS THE GATES on a tag push, and
  * THIS CLONE is wired to it. The last one is deliberately about the environment -
  * a hook that is tracked and correct and not configured is the same as no hook,
  * and the failure message is the one-line fix.
  *
- * The hook's own control (a planted red test refusing a tag push to a throwaway
- * bare remote) is recorded in the hook's header and in the CHANGELOG; a test
- * cannot push a tag, so that part stays a documented procedure.
+ * A test cannot push a tag, so the hook's refusal of a tag push over a red suite is
+ * checked by hand whenever the hook changes.
  */
 class TheReleaseGateIsArmedTest extends TestCase
 {

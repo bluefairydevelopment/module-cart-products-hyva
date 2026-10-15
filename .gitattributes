@@ -1,19 +1,14 @@
 # What a merchant does NOT receive.
 #
 # This file has to live INSIDE the package directory, not only at the repository
-# root: `git archive` reads .gitattributes from within the tree it is archiving,
-# so in a monorepo a root-only file governs a whole-repo archive nobody
-# publishes while every real per-package zip still ships everything below it.
-# That mistake shipped a live admin password through three PrintifyCore
-# releases before it was found.
+# root: `git archive` reads .gitattributes from within the tree it is archiving.
 Test/ export-ignore
 .gitattributes export-ignore
 phpunit.xml.dist export-ignore
 phpstan.neon.dist export-ignore
 phpcs.xml.dist export-ignore
 .githooks/ export-ignore
-# The Jest harness for the Alpine.js component (M2MAP-650 review round 3, R3-8): no Magento
-# install runs it. TheArchiveShipsNoDevelopmentToolingTest reads the archive itself.
+# The Jest harness for the Alpine.js component: no Magento install runs it. TheArchiveShipsNoDevelopmentToolingTest reads the archive itself.
 jest.config.js export-ignore
 package.json export-ignore
 package-lock.json export-ignore

@@ -1,11 +1,10 @@
-# Gate 1 static analysis for module-cart-products-hyva. M2MAP-604.
+# Gate 1 static analysis for module-cart-products-hyva.
 # Run from the package root, with MAGENTO_ROOT set:
 #   MAGENTO_ROOT=/path/to/magento /path/to/magento/vendor/bin/phpstan analyse -c phpstan.neon.dist
 #
-# See prep-m2-extension-for-sale.md, Gate 1, for the three rules that make this
-# number mean anything: the root must have the package installed and compiled,
-# each root in a comparison needs its own TMPDIR, and the run must happen at
-# BOTH ends of the declared version range.
+# Three rules make the result meaningful: the root must have the package installed
+# and compiled, each root in a comparison needs its own TMPDIR, and the run must
+# happen at BOTH ends of the declared version range.
 parameters:
     # composer.json requires "php": "^8.3", and a constraint is a claim about
     # every version it admits - analyse at the LOWER bound. Raise this only

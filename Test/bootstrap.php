@@ -5,14 +5,9 @@
  *
  * Unit-test and static-analysis bootstrap for bluefairy/module-cart-products-hyva.
  *
- * M2MAP-604. Until 1.0.6 this package's phpunit.xml.dist named
- * `../../../dev/tests/unit/framework/bootstrap.php` - a path that exists only when
- * the module sits at app/code/BlueFairy/<Name> inside a Magento install. This
- * package is only ever installed into vendor/, and Test/ is export-ignored from
- * the published archive, so the suite could run in no place it could ever be.
- *
- * Ported from module-contact-success's bootstrap (itself from module-jira's, the
- * house reference). The numbered lessons were paid for in sibling packages:
+ * This package is only ever installed into vendor/, so Magento's own unit-test
+ * bootstrap (`dev/tests/unit/framework/bootstrap.php`, which exists only for a module
+ * under app/code/) is not used. The numbered rules below are what this one enforces:
  *
  * 1. LOAD vendor/autoload.php, NEVER app/bootstrap.php. Magento's
  *    app/bootstrap.php calls stream_wrapper_unregister('phar'), and phpstan runs
