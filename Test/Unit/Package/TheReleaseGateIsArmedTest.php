@@ -29,6 +29,19 @@ use RuntimeException;
  */
 class TheReleaseGateIsArmedTest extends TestCase
 {
+    /** `env -u` for each GIT_* variable but GIT_EXEC_PATH, for commands that go through a shell. */
+    private static function cleanEnvPrefix(): string
+    {
+        $unset = '';
+        foreach (array_keys(getenv()) as $name) {
+            if (str_starts_with((string) $name, 'GIT_') && $name !== 'GIT_EXEC_PATH') {
+                $unset .= ' -u ' . escapeshellarg((string) $name);
+            }
+        }
+
+        return 'env' . $unset;
+    }
+
     private static function root(): string
     {
         return dirname(__DIR__, 3);
@@ -44,7 +57,7 @@ class TheReleaseGateIsArmedTest extends TestCase
         $command = 'cd ' . escapeshellarg(self::root()) . ' && git '
             . implode(' ', array_map('escapeshellarg', $args)) . ' 2>&1';
         // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
-        exec($command, $out, $status);
+        exec(self::cleanEnvPrefix() . ' bash -c ' . escapeshellarg($command), $out, $status);
         if ($status !== 0) {
             throw new RuntimeException('git ' . implode(' ', $args) . " exited {$status}: " . implode("\n", $out));
         }
@@ -134,7 +147,7 @@ class TheReleaseGateIsArmedTest extends TestCase
         $out = [];
         $status = 0;
         // phpcs:ignore Magento2.Security.InsecureFunction -- test only: runs git or php as a child process to measure the package; no request input reaches the command
-        exec('cd ' . escapeshellarg(self::root()) . ' && git config core.hooksPath 2>&1', $out, $status);
+        exec(self::cleanEnvPrefix() . ' bash -c ' . escapeshellarg('cd ' . escapeshellarg(self::root()) . ' && git config core.hooksPath 2>&1'), $out, $status);
         if ($status !== 0 && $status !== 1) {
             throw new RuntimeException("git config core.hooksPath exited {$status}: " . implode("\n", $out));
         }

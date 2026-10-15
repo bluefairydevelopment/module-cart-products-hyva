@@ -10,6 +10,7 @@
 
 ### Fixed
 - The Jest harness for the Alpine.js component (`jest.config.js`, `package.json`, `package-lock.json`) no longer ships in the package archive.
+- Development only (nothing ships): the release-gate tests run git with every `GIT_*` variable removed (except `GIT_EXEC_PATH`), so the pre-push hook's `GIT_DIR` can no longer send a scratch repository's commits to this repository, and a regression test proves it.
 
 ## 1.0.5 — 2026-09-18
 

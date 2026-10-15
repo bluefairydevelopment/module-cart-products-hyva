@@ -74,6 +74,28 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         'v1.0.5' => '^103.0.9',
     ];
 
+    /**
+     * The environment for every git child process: this one with each GIT_* variable removed
+     * except GIT_EXEC_PATH. The release gate runs this suite INSIDE a git hook, where GIT_DIR /
+     * GIT_WORK_TREE / GIT_INDEX_FILE name the REAL repository; a scratch repository that inherits
+     * them commits, tags and configures the real one (M2MAP-687; a junk commit landed in the real
+     * module-cart-products-graphql repo that way). Read on every call, never cached.
+     *
+     * @return array<string, string>
+     */
+    private static function cleanEnv(): array
+    {
+        $env = [];
+        foreach (getenv() as $name => $value) {
+            if (str_starts_with((string) $name, 'GIT_') && $name !== 'GIT_EXEC_PATH') {
+                continue;
+            }
+            $env[(string) $name] = (string) $value;
+        }
+
+        return $env;
+    }
+
     private static function root(): string
     {
         return dirname(__DIR__, 3);
@@ -168,7 +190,9 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
         $process = proc_open(
             array_merge(['git', '-C', $repo], $args),
             [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-            $pipes
+            $pipes,
+            null,
+            self::cleanEnv()
         );
         if (!is_resource($process)) {
             throw new RuntimeException('cannot start git');
@@ -308,7 +332,18 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
             ] as $args) {
                 [$rc, , $err] = self::git($repo, $args);
                 self::assertSame(0, $rc, 'git ' . implode(' ', $args) . ": $err");
+                if ($args === ['init', '-q']) {
+                    [$rc, $top, $err] = self::git($repo, ['rev-parse', '--show-toplevel']);
+                    self::assertSame(0, $rc, $err);
+                    self::assertSame(realpath($repo), realpath(trim($top)), 'the scratch repository is not the repository git resolved; refusing to commit');
+                }
             }
+
+            // Refuse to go on unless the scratch repository is the one git resolves: if it is not,
+            // the commits above went somewhere else.
+            [$rc, $top, $err] = self::git($repo, ['rev-parse', '--show-toplevel']);
+            self::assertSame(0, $rc, $err);
+            self::assertSame(realpath($repo), realpath(trim($top)), 'the scratch repository is not the repository git resolved');
 
             [$rc, $tags, $err] = self::releaseTagsOf($repo);
             self::assertSame(0, $rc, $err);
@@ -316,6 +351,41 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
             self::assertSame(['1.0.6', 'v1.0.5'], $tags);
         } finally {
             self::removeTree($repo);
+        }
+    }
+
+    /**
+     * Regression (M2MAP-687): with GIT_DIR / GIT_WORK_TREE naming an 'outer' repository, as inside
+     * the pre-push hook, the scratch-repository control must not write anything to it.
+     */
+    public function testTheScratchRepositoryNeverTouchesAnOuterRepositoryNamedByGitEnv(): void
+    {
+        $outer = sys_get_temp_dir() . '/cart-products-outer-' . bin2hex(random_bytes(6));
+        $work = $outer . '-work';
+        self::assertTrue(mkdir($work, 0700, true), "cannot create $work");
+        $saved = ['GIT_DIR' => getenv('GIT_DIR'), 'GIT_WORK_TREE' => getenv('GIT_WORK_TREE')];
+        try {
+            [$rc, , $err] = self::git($work, ['init', '-q', '--bare', $outer]);
+            self::assertSame(0, $rc, $err);
+            $state = static function () use ($outer): string {
+                [, $refs] = self::git($outer, ['for-each-ref']);
+
+                return $refs . "\n" . (string) file_get_contents($outer . '/config') . "\n"
+                    . implode(',', array_diff((array) scandir($outer . '/objects'), ['.', '..']));
+            };
+            $before = $state();
+            putenv('GIT_DIR=' . $outer);
+            putenv('GIT_WORK_TREE=' . $work);
+            $this->testTheGitReadSeesUnprefixedReleaseTagsAndSkipsNonVersionTags();
+            putenv('GIT_DIR' . ($saved['GIT_DIR'] === false ? '' : '=' . $saved['GIT_DIR']));
+            putenv('GIT_WORK_TREE' . ($saved['GIT_WORK_TREE'] === false ? '' : '=' . $saved['GIT_WORK_TREE']));
+            self::assertSame($before, $state(), 'the outer repository named by GIT_DIR was written to');
+        } finally {
+            foreach ($saved as $name => $value) {
+                putenv($value === false ? $name : $name . '=' . $value);
+            }
+            self::removeTree($work);
+            self::removeTree($outer);
         }
     }
 
