@@ -10,7 +10,7 @@ Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-produc
 - What has been measured, on Magento 2.4.8-p5 (PHP 8.4, PHPUnit 10.5) and 2.4.9 (PHP 8.5, PHPUnit 12.5): this package's PHP unit suite, phpcs and phpstan pass; and with this package installed, the core's integration test `ExportButtonLayoutTest` renders the cart under a Hyvä theme (Hyva/default-csp) and finds this package's export block in place of the Luma one. This package has **no integration tests of its own**, and the Alpine.js component's tests (`Test/Jest`) are Jest unit tests, not a browser run.
 - PHP 8.3 or later, within what your Magento release supports (2.4.8: 8.3–8.4; 2.4.9: 8.3–8.5). On PHP 8.3, against both 2.4.8-p5 and 2.4.9, this package's unit suite, phpcs and phpstan pass; nothing else has been run on PHP 8.3.
 - `BlueFairy_CartProducts` **1.1.0 or later** (on any supported Magento release) (core module — must be installed first). Releases 1.0.4 and 1.0.5 of this package do not declare that minimum (they accept any 1.x core). If an older core is already installed, update both together with a pinned requirement, which cannot fall back to the 1.0.3 releases: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W` (the pinned requirement fails rather than installing anything older). Do not run it unpinned: on 2.4.8 an unpinned `composer require bluefairy/module-cart-products-hyva -W` resolves to the 1.0.3 releases.
-- Hyva Theme
+- Hyva Theme (`hyva-themes/magento2-theme-module` `^1.5`)
 
 ---
 
@@ -31,7 +31,7 @@ php bin/magento cache:flush
 When this module is enabled:
 
 1. The Luma export button block (`bluefairy.cartproducts.export`) is **removed** from the layout via `remove="true"`.
-2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.form`.
+2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`, the cart's order-actions row. If a custom theme has no such block, add an equivalent `referenceBlock` for the theme's cart action area.
 
 The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/export`) and the same `ExportButton` ViewModel from the core module. Only the frontend rendering changes.
 
