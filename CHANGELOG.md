@@ -7,23 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.1.1 — 2026-10-15
 
-### Fixed
-- **The Hyvä button position is described from the theme.** In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) the `checkout.cart.order.actions` block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when enabled); custom themes may differ. The loading label is quoted as the button shows it ("Exporting…").
-- **The documentation names the block the button is injected into.** The README and Features Guide said the Alpine.js button is injected into `checkout.cart.form`; the layout injects it into `checkout.cart.order.actions`, a block of the cart items form (`checkout.cart.form` is where the Luma button from the core module sits). Both documents now say so, and the README says what to do when a custom theme has no such block.
-- The Requirements section states the supported Magento and PHP releases and the core version this package needs, without test-run detail.
-- The README Requirements state the Hyvä theme module the package requires (`hyva-themes/magento2-theme-module` `^1.5`).
-- The README no longer describes the component's page-cache behaviour; the export button block is declared not cacheable.
-- The button position text states the markup order and that the default theme's `row-reverse` toolbar shows the button to the left of Update Shopping Cart.
+### Changed
+- **Button position:** in the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) the `checkout.cart.order.actions` block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when enabled); custom themes may differ. The default theme's `row-reverse` toolbar shows the button to the left of Update Shopping Cart. The loading label is "Exporting…".
+- **Injection point:** the layout injects the Alpine.js button into `checkout.cart.order.actions`, a block of the cart items form (`checkout.cart.form` is where the Luma button from the core module sits). The README says what to do when a custom theme has no such block.
+- The Requirements section states the supported Magento and PHP releases, the core version this package needs, and the Hyvä theme module the package requires (`hyva-themes/magento2-theme-module` `^1.5`). The PHP requirement is the `php ^8.3` constraint in `composer.json`.
 - The README Installation section says the Hyvä theme CSS must be rebuilt (`npm run build`) after installing.
-- The PHP requirement is stated as the `php ^8.3` constraint in `composer.json`.
-- Comments in the shipped layout, events and Tailwind source files were reworded; no behaviour changed.
+- The export button block is declared not cacheable.
 
 ## 1.1.0 — 2026-10-14
 
 ### Changed
-- **Installs on Magento 2.4.8 as well as 2.4.9.** The framework requirement is now `magento/framework ~103.0.8` (was `^103.0.9`), which refuses a 103.1 framework and admits later 2.4 releases from framework 103.0.10 up.
+- **Installs on Magento 2.4.8 as well as 2.4.9.** The framework requirement is now `magento/framework ~103.0.8` (was `^103.0.9`), which refuses a 103.1 framework.
 - **Requires `bluefairy/module-cart-products` 1.1.0 or later (was 1.0.4 or later).** If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W`.
-- README Requirements state the supported Magento releases (2.4.8, 2.4.9) and PHP versions (8.3 or later within what your Magento release supports), and what has been tested on each.
+- README Requirements state the supported Magento releases (2.4.8, 2.4.9) and PHP versions (8.3 or later within what your Magento release supports).
 - Licence: the independent-contractor clause is reworded; the meaning is unchanged.
 
 ### Fixed
@@ -39,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The layout file is renamed from `checkout_cart_index.xml` to `hyva_checkout_cart_index.xml`. The unprefixed handle applied on every theme, including Luma, and injected an Alpine.js component onto a page with no Alpine loaded.
 - The module was never registered with Hyvä's Tailwind build (`view/frontend/tailwind/module.css` plus `Observer/RegisterModuleForHyvaConfig.php`, observing `hyva_config_generate_before`), so its utility classes were silently dropped from the compiled CSS. It is registered now.
-- The README opened with a link to `../CartProducts/README.md`, which does not exist. The link is removed.
+- The README has no link to `../CartProducts/README.md`.
 
 ### Changed
 - Added `docs/screenshots/` to `.gitignore`.

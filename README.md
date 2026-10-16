@@ -9,7 +9,7 @@ Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-produc
 - Magento 2.4.8 or 2.4.9 (`magento/framework ~103.0.8`).
 - PHP `php ^8.3` (the version constraint in `composer.json`), within the PHP versions your Magento release supports.
 - `BlueFairy_CartProducts` **1.1.0 or later** (core module — must be installed first). Releases 1.0.4 and 1.0.5 of this package do not declare that minimum (they accept any 1.x core). If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W`.
-- On Magento 2.4.8, install this package and the core at 1.1.0 or later and pin the version as above. An unpinned `composer require` on 2.4.8 falls back to the 1.0.3 releases, which predate any Magento constraint. **Do not install the 1.0.3 releases.**
+- On Magento 2.4.8, install this package and the core at 1.1.0 or later and pin the version as above. The 1.0.3 releases declare no Magento constraint. **Do not install the 1.0.3 releases.**
 - Hyva Theme (`hyva-themes/magento2-theme-module` `^1.5`)
 - The Alpine.js component's tests are Jest unit tests; this package has no integration tests of its own.
 

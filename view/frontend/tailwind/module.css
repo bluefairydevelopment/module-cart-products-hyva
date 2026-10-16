@@ -3,12 +3,10 @@
  *
  * Tailwind source registration for BlueFairy_CartProductsHyva.
  *
- * Hyvä's Tailwind build scans the theme, not this module. `npx hyva-sources`
- * discovers this file and emits an @import for it into the theme's
- * generated/hyva-source.css, which is what brings the classes used below into
- * the compiled stylesheet. Without it every utility that appears only in these
- * templates is absent at runtime and the element renders as though the class
- * were never written — silently, with no console error and no 404.
+ * Points Hyvä's Tailwind build at this module's templates so that the utility
+ * classes used only in them are compiled. The module registers its
+ * view/frontend/tailwind directory on the hyva_config_generate_before event
+ * (etc/frontend/events.xml, Observer/RegisterModuleForHyvaConfig.php).
  *
  * After installing or upgrading this module the merchant must rebuild the
  * theme's CSS (`npm run build` in the theme's web/tailwind directory).

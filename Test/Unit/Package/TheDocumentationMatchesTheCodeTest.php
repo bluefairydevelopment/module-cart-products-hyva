@@ -278,4 +278,93 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
         self::assertSame(1, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', 'costs 499 USD'), 'the price check must fire on a specimen');
         self::assertSame(0, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', 'The Price column is the unit price'), 'the price check must not fire on the Price column');
     }
+
+    /** @return list<string> */
+    private static function changelogNarrationHits(string $text): array
+    {
+        // Assembled from parts so that this file does not match its own patterns.
+        $markers = [
+            'a correction of earlier documents' => '/\b(?:README|Features Guide|install guide|marketing text|product description|MARKETING\.txt)\b[^.\n]{0,80}\b(?:said|listed|showed|named|placed|claimed|described|decoded|opened with|no longer|now (?:state|read))\b/i',
+            'a tested-on claim' => '/\bwhat has been tested\b|\btested on\b|\bmeasured on\b/i',
+            'an unproven framework release mapping' => '/from framework 103\.0\.10 up|103\.0\.10/',
+            'an unproven cache claim' => '/FPC-safe/',
+            'a prediction of Composer resolution' => '/falls back to (?:the )?1\.0\.3/',
+            'comment-edit narration' => '/Comments in the shipped [^.\n]*were reworded/',
+            'a wrongly named transport' => '/\bREST controller\b/',
+        ];
+        $hits = [];
+        foreach ($markers as $name => $pattern) {
+            if (preg_match($pattern, $text, $match) === 1) {
+                $hits[] = $name . ': ' . $match[0];
+            }
+        }
+
+        return $hits;
+    }
+
+    public function testTheChangelogIsCustomerFacingOnly(): void
+    {
+        $text = self::read('CHANGELOG.md');
+        self::assertGreaterThan(5, preg_match_all('/^## \d/m', $text), 'the changelog has too few releases to mean anything');
+        self::assertSame([], self::changelogNarrationHits($text));
+    }
+
+    public function testTheChangelogCheckFiresOnASpecimenOfEachKind(): void
+    {
+        self::assertCount(1, self::changelogNarrationHits('The Features Guide placed the button below the table.'));
+        self::assertCount(1, self::changelogNarrationHits('The README listed it as "Quantity".'));
+        self::assertCount(1, self::changelogNarrationHits('and what has been tested on each.'));
+        self::assertCount(1, self::changelogNarrationHits('admits later releases from framework 103.0.10 up'));
+        self::assertCount(1, self::changelogNarrationHits('with Alpine.js component and FPC-safe runtime form key'));
+        self::assertCount(1, self::changelogNarrationHits('An unpinned require on 2.4.8 falls back to 1.0.3.'));
+        self::assertCount(1, self::changelogNarrationHits('Comments in the shipped code were reworded; no behaviour changed.'));
+        self::assertCount(1, self::changelogNarrationHits('duplicated in the REST controller'));
+        self::assertSame([], self::changelogNarrationHits('The development test directory no longer ships in the published package.'));
+    }
+
+    public function testNoDocumentPredictsWhatComposerDoesForAnUnpinnedRequire(): void
+    {
+        foreach (['README.md', 'CHANGELOG.md'] as $file) {
+            self::assertDoesNotMatchRegularExpression('/falls? back to (?:the )?1\.0\.3/', self::read($file), $file);
+        }
+        self::assertSame(1, preg_match('/falls? back to (?:the )?1\.0\.3/', 'a plain require on 2.4.8 falls back to 1.0.3'), 'the check must fire on a specimen');
+        self::assertStringContainsString('Do not install', self::read('README.md'));
+    }
+
+    public function testNoShippedFileCallsAStorefrontControllerARestEndpoint(): void
+    {
+        $root = self::root();
+        self::assertFileDoesNotExist($root . '/etc/webapi.xml', 'a webapi.xml makes REST wording true; revisit this test');
+        $examined = 0;
+        $hits = [];
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            $relative = substr($file->getPathname(), strlen($root) + 1);
+            if (preg_match('#^(?:Test|vendor|docs-build)/|(?:^|/)(?:node_modules|\.[^/]+)(?:/|$)#', $relative) === 1
+                || !in_array($file->getExtension(), ['php', 'phtml', 'xml', 'js', 'css', 'md', 'txt'], true)
+            ) {
+                continue;
+            }
+            $examined++;
+            if (preg_match('/\bREST\b/', (string) file_get_contents($file->getPathname())) === 1) {
+                $hits[] = $relative;
+            }
+        }
+        self::assertGreaterThan(5, $examined);
+        self::assertSame([], $hits);
+        self::assertSame(1, preg_match('/\bREST\b/', 'Shared by the REST controller'), 'the check must fire on a specimen');
+    }
+
+    public function testTheTailwindCommentsMakeOnlyClaimsTheCodeOrTheThemeShows(): void
+    {
+        $css = self::read('view/frontend/tailwind/module.css');
+        $observer = self::read('Observer/RegisterModuleForHyvaConfig.php');
+        $events = self::read('etc/frontend/events.xml');
+        self::assertStringNotContainsString('hyva-sources', $css);
+        self::assertStringNotContainsString('silently', $css . $events);
+        self::assertStringNotContainsString('FreeGiftHyva', $observer);
+        self::assertStringNotContainsString('safelist" comment', $observer);
+        self::assertStringContainsString('hyva_config_generate_before', $events);
+        self::assertStringContainsString("'extensions'", $observer);
+    }
 }
