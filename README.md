@@ -1,13 +1,13 @@
 # BlueFairy_CartProductsHyva
 
-Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-products`). Replaces the Luma export button with a self-contained Alpine.js component that is compatible with Hyva's full-page caching and frontend architecture.
+Hyva theme companion for `BlueFairy_CartProducts` (`bluefairy/module-cart-products`). Replaces the Luma export button with a self-contained Alpine.js component.
 
 ---
 
 ## Requirements
 
 - Magento 2.4.8 or 2.4.9 (`magento/framework ~103.0.8`).
-- PHP 8.3 or later, within what your Magento release supports (2.4.8: 8.3–8.4; 2.4.9: 8.3–8.5).
+- PHP `php ^8.3` (the version constraint in `composer.json`), within the PHP versions your Magento release supports.
 - `BlueFairy_CartProducts` **1.1.0 or later** (core module — must be installed first). Releases 1.0.4 and 1.0.5 of this package do not declare that minimum (they accept any 1.x core). If an older core is installed, update both together with a pinned requirement: `composer require bluefairy/module-cart-products-hyva:^1.1.0 -W`.
 - On Magento 2.4.8, install this package and the core at 1.1.0 or later and pin the version as above. An unpinned `composer require` on 2.4.8 falls back to the 1.0.3 releases, which predate any Magento constraint. **Do not install the 1.0.3 releases.**
 - Hyva Theme (`hyva-themes/magento2-theme-module` `^1.5`)
@@ -25,6 +25,8 @@ php -d memory_limit=2G bin/magento setup:di:compile
 php bin/magento cache:flush
 ```
 
+Then rebuild the Hyvä theme's CSS (`npm run build` in the theme's `web/tailwind` directory), so that the utility classes this module's templates use are in the compiled stylesheet.
+
 ---
 
 ## What It Does
@@ -32,7 +34,7 @@ php bin/magento cache:flush
 When this module is enabled:
 
 1. The Luma export button block (`bluefairy.cartproducts.export`) is **removed** from the layout via `remove="true"`.
-2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`, a block of the cart items form. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently. If a custom theme has no such block, add an equivalent `referenceBlock` for the theme's cart action area.
+2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`, a block of the cart items form. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently. In the markup it comes after the Update Shopping Cart button, but the default theme's `.actions-toolbar` rule sets `flex-direction: row-reverse` from the `md` breakpoint (`web/tailwind/components/actions-toolbar.css`), which places the button to the left of Update Shopping Cart. If a custom theme has no such block, add an equivalent `referenceBlock` for the theme's cart action area.
 
 The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/export`) and the same `ExportButton` ViewModel from the core module. Only the frontend rendering changes.
 
@@ -111,4 +113,3 @@ When disabled, the Luma export button from the core module will render instead.
 
 **Form key errors / CSRF failures**
 - Ensure `window.hyva` is available on the page. The Hyva theme must be active.
-- Check that the page is not being served from a stale full-page cache entry.

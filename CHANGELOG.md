@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The documentation names the block the button is injected into.** The README and Features Guide said the Alpine.js button is injected into `checkout.cart.form`; the layout injects it into `checkout.cart.order.actions`, a block of the cart items form (`checkout.cart.form` is where the Luma button from the core module sits). Both documents now say so, and the README says what to do when a custom theme has no such block.
 - The Requirements section states the supported Magento and PHP releases and the core version this package needs, without test-run detail.
 - The README Requirements state the Hyvä theme module the package requires (`hyva-themes/magento2-theme-module` `^1.5`).
+- The README no longer describes the component's page-cache behaviour; the export button block is declared not cacheable.
+- The button position text states the markup order and that the default theme's `row-reverse` toolbar shows the button to the left of Update Shopping Cart.
+- The README Installation section says the Hyvä theme CSS must be rebuilt (`npm run build`) after installing.
+- The PHP requirement is stated as the `php ^8.3` constraint in `composer.json`.
 - Comments in the shipped layout, events and Tailwind source files were reworded; no behaviour changed.
 
 ## 1.1.0 — 2026-10-14
@@ -50,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Alpine.js export button component for Hyva theme (`export-button.phtml`) with reactive loading, success, and error states
 - Layout XML (`checkout_cart_index.xml`) that removes the Luma export block and injects the Hyva Alpine.js block into `checkout.cart.order.actions`
-- Full-page cache compatibility via runtime form key retrieval using `window.hyva.getFormKey()`
+- Form key retrieved at runtime using `window.hyva.getFormKey()`
 - 30-second `AbortController` timeout on the export fetch request
 - Inline error display with `role="alert"` for accessibility on network or server failures
 - `canExport()` ViewModel gate — renders nothing when export is disabled or guest export is not permitted

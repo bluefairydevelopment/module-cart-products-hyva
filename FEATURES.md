@@ -14,7 +14,7 @@ Visual walkthrough of the Hyva Alpine.js cart export button.
 
 ## 1. Export Button on Hyva Cart Page
 
-The Alpine.js export button is added to the `checkout.cart.order.actions` block of the shopping cart page, replacing the Luma button. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently.
+The Alpine.js export button is added to the `checkout.cart.order.actions` block of the shopping cart page, replacing the Luma button. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently. In the markup it comes after the Update Shopping Cart button, but the default theme's `.actions-toolbar` rule sets `flex-direction: row-reverse` from the `md` breakpoint, which places the button to the left of Update Shopping Cart.
 
 The button inherits all configuration from the core module — no separate admin screens are needed.
 

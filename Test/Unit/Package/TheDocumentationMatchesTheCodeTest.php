@@ -235,4 +235,47 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
             self::assertStringContainsString('"Exporting…"', self::read($document), $document);
         }
     }
+
+    public function testNoDocumentClaimsFullPageCacheCompatibilityTheLayoutDoesNotShow(): void
+    {
+        self::assertStringContainsString('cacheable="false"', self::read('view/frontend/layout/hyva_checkout_cart_index.xml'));
+        foreach (['README.md', 'FEATURES.md', 'CHANGELOG.md'] as $document) {
+            self::assertDoesNotMatchRegularExpression('/full-page cach/i', self::read($document), $document);
+        }
+    }
+
+    public function testTheButtonPositionTextStatesBothTheMarkupOrderAndTheToolbarDirection(): void
+    {
+        foreach (['README.md', 'FEATURES.md'] as $document) {
+            self::assertStringContainsString('row-reverse', self::read($document), $document);
+            self::assertStringContainsString('to the left of', self::read($document), $document);
+        }
+    }
+
+    public function testTheReadmeSaysTheThemeCssMustBeRebuiltAsModuleCssDoes(): void
+    {
+        self::assertStringContainsString('npm run build', self::read('view/frontend/tailwind/module.css'));
+        self::assertStringContainsString('npm run build', self::read('README.md'));
+    }
+
+    public function testThePhpStatementIsTheManifestsRequirement(): void
+    {
+        $composer = json_decode(self::read('composer.json'), true);
+        self::assertStringContainsString('`php ' . $composer['require']['php'] . '`', self::read('README.md'));
+        self::assertStringNotContainsString('8.3–8.5', self::read('README.md'));
+    }
+
+    public function testNoShippedDocumentCarriesAPriceFigure(): void
+    {
+        $files = array_merge(['README.md', 'FEATURES.md', 'CHANGELOG.md', 'LICENSE.txt'], []);
+        foreach ($files as $file) {
+            if (!is_file(dirname(__DIR__, 3) . '/' . $file)) {
+                continue;
+            }
+            self::assertSame(0, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file)), "$file carries a price figure");
+        }
+        self::assertSame(1, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', 'Only $299 per year'), 'the price check must fire on a specimen');
+        self::assertSame(1, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', 'costs 499 USD'), 'the price check must fire on a specimen');
+        self::assertSame(0, preg_match('/[$€£]\s?\d|\d\s?(?:USD|EUR|GBP)\b/', 'The Price column is the unit price'), 'the price check must not fire on the Price column');
+    }
 }
