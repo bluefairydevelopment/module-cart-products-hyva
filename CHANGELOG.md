@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 1.1.1 — 2026-10-15
 
 ### Fixed
-- **The documentation names the block the button is injected into.** The README and Features Guide said the Alpine.js button is injected into `checkout.cart.form`; the layout injects it into `checkout.cart.order.actions`, the cart's order-actions row (`checkout.cart.form` is where the Luma button from the core module sits). Both documents now say so, and the README says what to do when a custom theme has no such block.
+- **The Hyvä button position is described from the theme.** In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) the `checkout.cart.order.actions` block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when enabled); custom themes may differ. The loading label is quoted as the button shows it ("Exporting…").
+- **The documentation names the block the button is injected into.** The README and Features Guide said the Alpine.js button is injected into `checkout.cart.form`; the layout injects it into `checkout.cart.order.actions`, a block of the cart items form (`checkout.cart.form` is where the Luma button from the core module sits). Both documents now say so, and the README says what to do when a custom theme has no such block.
 - The Requirements section states the supported Magento and PHP releases and the core version this package needs, without test-run detail.
 - The README Requirements state the Hyvä theme module the package requires (`hyva-themes/magento2-theme-module` `^1.5`).
 - Comments in the shipped layout, events and Tailwind source files were reworded; no behaviour changed.

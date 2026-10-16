@@ -212,4 +212,27 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
         self::assertSame([], self::historyHits('Luma Cart and luma-cart-export-button.png'));
         self::assertSame([], self::historyHits('A clean sentence about a cart export.'));
     }
+
+    public function testTheHyvaThemeClaimIsScopedToTheVersionItWasCheckedAgainst(): void
+    {
+        // Checked by reading the layout and cart form template of hyva-themes/magento2-default-theme 1.5.2.
+        self::assertStringNotContainsString('validated against', self::read('view/frontend/layout/hyva_checkout_cart_index.xml'));
+        foreach (['README.md', 'FEATURES.md'] as $document) {
+            self::assertStringNotContainsString('order-actions row', self::read($document), $document);
+        }
+        foreach (['README.md', 'FEATURES.md'] as $document) {
+            self::assertStringContainsString('1.5.2', self::read($document), $document);
+            self::assertStringContainsString('a custom theme may place it differently', self::read($document), $document);
+        }
+    }
+
+    public function testTheQuotedLoadingLabelIsTheTemplatesString(): void
+    {
+        $template = self::read('view/frontend/templates/cart/export-button.phtml');
+        self::assertStringContainsString("__('Exporting…')", $template);
+        foreach (['README.md', 'FEATURES.md'] as $document) {
+            self::assertStringNotContainsString('Exporting...', self::read($document), $document);
+            self::assertStringContainsString('"Exporting…"', self::read($document), $document);
+        }
+    }
 }

@@ -32,7 +32,7 @@ php bin/magento cache:flush
 When this module is enabled:
 
 1. The Luma export button block (`bluefairy.cartproducts.export`) is **removed** from the layout via `remove="true"`.
-2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`, the cart's order-actions row. If a custom theme has no such block, add an equivalent `referenceBlock` for the theme's cart action area.
+2. A new Alpine.js export button block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`, a block of the cart items form. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently. If a custom theme has no such block, add an equivalent `referenceBlock` for the theme's cart action area.
 
 The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/export`) and the same `ExportButton` ViewModel from the core module. Only the frontend rendering changes.
 
@@ -82,7 +82,7 @@ cartExport(url) {
 ### Button States
 
 - **Default:** "Export Cart" — ready to click
-- **Loading:** "Exporting..." — button disabled, fetch in progress
+- **Loading:** "Exporting…" — button disabled, fetch in progress
 - **Success:** "Downloaded" — shown for 2 seconds, then resets
 - **Error:** Inline red error message below the button with `role="alert"`
 
