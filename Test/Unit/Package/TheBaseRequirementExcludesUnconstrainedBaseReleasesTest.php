@@ -17,13 +17,12 @@ use UnexpectedValueException;
 /**
  * A SIBLING REQUIREMENT IS A CLAIM ABOUT EVERY BASE RELEASE IT ADMITS.
  *
- * M2MAP-650 review round 2, R2-1. Until this change composer.json required
- * bluefairy/module-cart-products at "^1.0". Base releases 1.0.0 - 1.0.3 declare
+ * A requirement of "^1.0" on bluefairy/module-cart-products would admit base releases
+ * 1.0.0 - 1.0.3, which declare
  * `magento/framework: "*"`, and 1.0.4 / 1.0.5 require the 2.4.9 line
  * (`^103.0.9`). So on Magento 2.4.8 Composer could satisfy this package only
- * with base 1.0.3 - a release from before M2MAP-151, whose archive still shipped
- * Test/ (the Playwright test carrying a live admin password). Our rig could not
- * see it: it installs the base from a path repository at a forced version.
+ * with base 1.0.3 - a release from before the development tests were removed from
+ * the archive.
  *
  * The rule held here: this package's base requirement admits NO released base
  * whose composer.json leaves magento/framework unconstrained - missing, or a
@@ -32,22 +31,18 @@ use UnexpectedValueException;
  * Two sources of the released tags, so the rule holds wherever the suite runs:
  *
  * - RELEASED_BASE_FRAMEWORK, a record of every base tag's requirement, read via
- *   git on 2026-10-07. Always checked.
+ *   git. Always checked.
  * - The base repository's own git history, when one is reachable: every tag
  *   Composer would offer as a release is read (`git tag -l`, then
  *   `git show <tag>:composer.json`), the rule is applied to all of them, and the
  *   record is compared with what git says, so the record cannot drift from
  *   history. "Every tag Composer would offer" is every tag its VersionParser can
- *   normalise, with or without a leading "v" - NOT `git tag -l 'v*'`, which is
- *   what this read until review round 3 (L1): an unprefixed `1.0.6` tag is a
- *   release to Composer and was invisible here. Looked for at $CART_PRODUCTS_GIT (which must then
+ *   normalise, with or without a leading "v" - NOT `git tag -l 'v*'`: an unprefixed
+ *   `1.0.6` tag is a release to Composer and would be invisible to that. Looked for at $CART_PRODUCTS_GIT (which must then
  *   be usable), $CART_PRODUCTS_SRC, next to this repository's main checkout,
  *   and next to this package root. With none reachable (a clone of this package
  *   alone) that one test is skipped, naming where it looked; the recorded check
- *   above still runs. On the rig's gate it runs: since rig c2a1b94 each package
- *   is uploaded as a git bundle carrying every tag, and the base is the sibling
- *   clone next to this package root (gate run 20261007-215732-36460: the git
- *   case passed on 2.4.9 and 2.4.8, not skipped).
+ *   above still runs.
  */
 class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
 {
@@ -58,13 +53,11 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
 
     /**
      * Every released base tag => its composer.json `require.magento/framework`
-     * (null = not declared). Read via git on 2026-10-07 from module-cart-products.
+     * (null = not declared). Read via git from module-cart-products.
      *
-     * Tags v1.0.0, v1.0.1 and v1.0.2 were DELETED on 2026-10-08 (Jennifer's decision:
-     * superseded, never install), on GitHub and in the local clones, so they are no
-     * longer releases Composer can offer and are no longer recorded here: the git
-     * comparison below fails on a record naming a tag the history does not have
-     * (seen red with them still listed: rig-gate-runs/20261008-s7-cart-tags/). v1.0.3
+     * Tags v1.0.0, v1.0.1 and v1.0.2 were deleted (superseded, never install), so they are
+     * no longer releases Composer can offer and are not recorded here: the git
+     * comparison below fails on a record naming a tag the history does not have. v1.0.3
      * stays, with `magento/framework: "*"` - the unconstrained release this rule must
      * still exclude, and the case that keeps the recorded check able to fail.
      */
@@ -78,7 +71,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
      * The environment for every git child process: this one with each GIT_* variable removed
      * except GIT_EXEC_PATH. The release gate runs this suite INSIDE a git hook, where GIT_DIR /
      * GIT_WORK_TREE / GIT_INDEX_FILE name the REAL repository; a scratch repository that inherits
-     * them commits, tags and configures the real one (M2MAP-687; a junk commit landed in the real
+     * them commits, tags and configures the real one.
      * module-cart-products-graphql repo that way). Read on every call, never cached.
      *
      * @return array<string, string>
@@ -311,7 +304,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     }
 
     /**
-     * CONTROL for review round 3, L1: the git read sees an UNPREFIXED release tag. A throwaway
+     * CONTROL: the git read sees an UNPREFIXED release tag. A throwaway
      * repository gets a "v1.0.5" tag, an unprefixed "1.0.6" tag and a "nightly" tag; the read
      * must return the first two and not the third. `git tag -l 'v*'` - what this read was -
      * returns only v1.0.5 and fails here.
@@ -355,7 +348,7 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     }
 
     /**
-     * Regression (M2MAP-687): with GIT_DIR / GIT_WORK_TREE naming an 'outer' repository, as inside
+     * Regression: with GIT_DIR / GIT_WORK_TREE naming an 'outer' repository, as inside
      * the pre-push hook, the scratch-repository control must not write anything to it.
      */
     public function testTheScratchRepositoryNeverTouchesAnOuterRepositoryNamedByGitEnv(): void

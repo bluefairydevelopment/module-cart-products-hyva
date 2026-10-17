@@ -11,21 +11,16 @@ namespace BlueFairy\CartProductsHyva\Test\Unit\Package;
 use PHPUnit\Framework\TestCase;
 
 /**
- * M2MAP-608. Hyvä's Tailwind build scans the THEME. A module's utility classes
+ * Hyvä's Tailwind build scans the THEME. A module's utility classes
  * reach the compiled stylesheet only if the module's own
  * `view/frontend/tailwind/module.css` declares an `@source` glob over its
  * templates - `npx hyva-sources` imports the FILE, not the templates.
  *
- * This package's module.css has carried the glob since M2MAP-229, when it had
- * none and every utility used only in the export button was dropped from the
- * compiled CSS. Nothing pinned the line afterwards. module-jira-hyva shipped the
- * same file as 1,466 bytes of comment and no @source (M2MAP-474): measured on the
- * SERVED stylesheet, 39 of 110 class tokens had no rule - black required
- * asterisks, no button padding - with no console error and a 200 with correct
- * markup. phpcs and phpstan do not read CSS, and phpunit was green across it.
+ * Without the glob every utility used only in the export button is dropped from
+ * the compiled CSS, silently: no console error, and a 200 with correct markup.
+ * phpcs and phpstan do not read CSS, so this test pins the line.
  *
- * Ported from module-jira-hyva's test of the same name. Every assertion is
- * written against a specimen this test plants itself.
+ * Every assertion is written against a specimen this test builds itself.
  */
 class TailwindScansThisPackagesTemplatesTest extends TestCase
 {
@@ -146,7 +141,7 @@ class TailwindScansThisPackagesTemplatesTest extends TestCase
     }
 
     /**
-     * The comment-stripping control: prove the stripper removes a planted
+     * The comment-stripping control: prove the stripper removes an
      * `@source` inside a comment, so the first test above cannot pass on prose.
      */
     public function testACommentedOutSourceDoesNotCountAsADeclaration(): void

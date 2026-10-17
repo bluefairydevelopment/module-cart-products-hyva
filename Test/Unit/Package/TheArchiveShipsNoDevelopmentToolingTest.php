@@ -16,11 +16,9 @@ use RuntimeException;
  * WHAT A MERCHANT RECEIVES IS THE `git archive` OF THE TAG - so read that archive, not the
  * .gitattributes file that is supposed to shape it.
  *
- * M2MAP-650 review round 3, R3-8: the archive of this package shipped jest.config.js,
- * package.json and package-lock.json - the Jest harness for the Alpine.js component, which
- * no Magento install runs. Nothing secret, but a merchant's vendor/ received an npm manifest
- * and a 100 KB lockfile of development dependencies, and nothing checked what the archive
- * carried beyond Test/.
+ * The archive must not carry jest.config.js, package.json or package-lock.json - the Jest
+ * harness for the Alpine.js component, which no Magento install runs - nor anything else
+ * beyond what the module needs.
  *
  * The archive is built from HEAD with --worktree-attributes, so the .gitattributes being
  * changed is the one applied; at a release HEAD is the tag and the tree is clean (the
@@ -55,8 +53,7 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
      * The environment for every git child process: this one with each GIT_* variable removed
      * except GIT_EXEC_PATH. The release gate runs this suite INSIDE a git hook, where GIT_DIR /
      * GIT_WORK_TREE / GIT_INDEX_FILE name the REAL repository; a scratch repository that inherits
-     * them commits, tags and configures the real one (M2MAP-687; a junk commit landed in the real
-     * module-cart-products-graphql repo that way). Read on every call, never cached.
+     * them commits, tags and configures the real one. Read on every call, never cached.
      *
      * @return array<string, string>
      */

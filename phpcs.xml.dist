@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 <!--
-    Gate 1 coding standard for module-cart-products-hyva. M2MAP-604. Run from the package root:
+    Gate 1 coding standard for module-cart-products-hyva. Run from the package root:
 
         <magento-root>/vendor/bin/phpcs standard=phpcs.xml.dist -q
 
     (flag name written without its two leading hyphens above, because a literal
     double hyphen inside an XML comment is rejected by phpcs' parser.)
 
-    Exclusions mirror the house ruleset (Printify, product-grid-export, jira,
-    contact-success): docblock-format opinions and pure formatting sniffs that
+    Exclusions follow the house ruleset: docblock-format opinions and pure formatting sniffs that
     phpcbf can rewrite without changing behaviour. Nothing here suppresses a sniff
     that could hide a real defect; EmptyBlock and DiscouragedFunction are
     deliberately NOT excluded for that reason.

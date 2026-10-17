@@ -14,7 +14,7 @@ Visual walkthrough of the Hyva Alpine.js cart export button.
 
 ## 1. Export Button on Hyva Cart Page
 
-The Alpine.js export button appears on the shopping cart page within the `checkout.cart.form` container, replacing the Luma button.
+The Alpine.js export button is added to the `checkout.cart.order.actions` block of the shopping cart page, replacing the Luma button. In the Hyvä default theme (`hyva-themes/magento2-default-theme` 1.5.2) that block is rendered inside the cart form's actions toolbar, after the Update Shopping Cart button (and the clear-cart button when it is enabled); a custom theme may place it differently. In the markup it comes after the Update Shopping Cart button, but the default theme's `.actions-toolbar` rule sets `flex-direction: row-reverse` from the `md` breakpoint, which places the button to the left of Update Shopping Cart.
 
 The button inherits all configuration from the core module — no separate admin screens are needed.
 
@@ -28,7 +28,7 @@ The button displays "Export Cart" and is ready to click.
 
 ### Loading
 
-While the CSV is being generated and downloaded, the button text changes to "Exporting..." and the button is disabled. The `x-cloak` directive ensures this state is hidden until Alpine.js initialises.
+While the CSV is being generated and downloaded, the button text changes to "Exporting…" and the button is disabled. The `x-cloak` directive ensures this state is hidden until Alpine.js initialises.
 
 ### Success
 
@@ -45,7 +45,7 @@ If the export fails (network error, server error, or 30-second timeout), an inli
 ### With BlueFairy_CartProductsHyva enabled
 
 - The Luma export block (`bluefairy.cartproducts.export`) is **removed** via `remove="true"`.
-- The Hyva export block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.form`.
+- The Hyva export block (`bluefairy.cartproducts.hyva.export`) is **injected** into `checkout.cart.order.actions`.
 - Only one export button renders on the page.
 
 ### With BlueFairy_CartProductsHyva disabled

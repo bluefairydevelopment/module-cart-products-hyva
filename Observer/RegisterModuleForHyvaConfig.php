@@ -15,13 +15,10 @@ use Magento\Framework\Event\ObserverInterface;
 /**
  * Tell Hyvä's `hyva-config` generator where this module's Tailwind sources live.
  *
- * Mirrors Hyva\Theme\Observer\RegisterModuleForHyvaConfig, which registers only
- * Hyva_Theme itself, and BlueFairy\FreeGiftHyva's equivalent. Hyvä stores then
- * pick up view/frontend/tailwind/module.css and the templates it points at, so
- * the utility classes used only in this module survive the theme build.
- *
- * A "Tailwind safelist" comment in a template does nothing on its own — nothing
- * reads it. This observer is what makes the scanning happen.
+ * Follows Hyva\Theme\Observer\RegisterModuleForHyvaConfig, which registers Hyva_Theme
+ * itself: it appends this module's root-relative path to the config's `extensions` list on
+ * the hyva_config_generate_before event, so that Hyvä's config generator lists this module
+ * as a source.
  */
 class RegisterModuleForHyvaConfig implements ObserverInterface
 {

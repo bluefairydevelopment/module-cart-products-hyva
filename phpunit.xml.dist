@@ -8,9 +8,9 @@
         MAGENTO_ROOT=/path/to/magento \
             /path/to/magento/vendor/bin/phpunit -c phpunit.xml.dist
 
-    M2MAP-604. Until 1.0.6 the bootstrap here was ../../../dev/tests/unit/framework/
-    bootstrap.php, which resolves only for a module at app/code/BlueFairy/<Name>.
-    This package lives in vendor/, so the suite could not run from any install.
+    The bootstrap is Test/bootstrap.php, not Magento's own
+    dev/tests/unit/framework/bootstrap.php, which resolves only for a module at
+    app/code/BlueFairy/<Name>; this package lives in vendor/.
     Test/Integration is deliberately NOT in the suite: it needs Magento's
     integration framework and a database, not a mocked one.
 -->
