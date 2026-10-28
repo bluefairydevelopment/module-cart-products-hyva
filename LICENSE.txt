@@ -1,8 +1,8 @@
 BLUE FAIRY DEVELOPMENT LLC
 END USER LICENSE AGREEMENT
 
-Cart Export for Adobe Commerce and Magento Open Source
-Version 1.1.1
+Cart Products for Adobe Commerce and Magento Open Source
+Version 1.1.2
 
 Copyright (c) Blue Fairy Development LLC, a Texas limited liability company.
 All rights reserved.
@@ -17,7 +17,7 @@ reseller, you have no right to install, copy or use it.
 
 "Licensor" means Blue Fairy Development LLC.
 
-"Software" means the Cart Export extension for Adobe Commerce and Magento
+"Software" means the Cart Products extension for Adobe Commerce and Magento
 Open Source, comprising the packages BlueFairy_CartProducts,
 BlueFairy_CartProductsGraphQl and BlueFairy_CartProductsHyva, together with
 their documentation and any updates supplied under this Agreement.

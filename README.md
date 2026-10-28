@@ -56,7 +56,7 @@ The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/ex
 
 This module has no separate configuration. It inherits all settings from the core module:
 
-- **Stores → Configuration → Sales → Cart Export**
+- **Stores → Configuration → Sales → Cart Products**
 
 The `canExport()` ViewModel gate controls whether the button renders. If the feature is disabled or the user is a guest without permission, the template outputs nothing.
 

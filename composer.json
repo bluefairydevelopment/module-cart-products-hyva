@@ -1,6 +1,6 @@
 {
     "name": "bluefairy/module-cart-products-hyva",
-    "description": "BlueFairy Cart Export — Hyva Alpine.js frontend for cart CSV export",
+    "description": "BlueFairy Cart Products — Hyva Alpine.js frontend for cart CSV export",
     "type": "magento2-module",
     "license": [
         "proprietary"

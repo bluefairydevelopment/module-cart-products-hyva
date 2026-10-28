@@ -116,7 +116,7 @@ class TheLicenceAMerchantReceivesTest extends TestCase
         $text = (string) file_get_contents(self::licencePath());
 
         self::assertStringContainsString(
-            'Cart Export for Adobe Commerce',
+            'Cart Products for Adobe Commerce',
             $text,
             'the licence does not name this product'
         );
