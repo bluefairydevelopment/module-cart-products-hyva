@@ -3,7 +3,7 @@
     "description": "BlueFairy Cart Products — Hyva Alpine.js frontend for cart CSV export",
     "type": "magento2-module",
     "license": [
-        "proprietary"
+        "MIT"
     ],
     "require": {
         "php": "^8.3",

@@ -121,15 +121,6 @@ class TheDocumentationMatchesTheCodeTest extends TestCase
         self::assertSame(1, preg_match('/Stores\s*(?:>|→)\s*Settings\s*(?:>|→)\s*Configuration/', 'Open Stores → Settings → Configuration'));
     }
 
-    public function testTheLicenceVersionIsTheNewestChangelogHeading(): void
-    {
-        preg_match('/^## \[?(\d+\.\d+\.\d+)/m', self::read('CHANGELOG.md'), $heading);
-        preg_match('/^Version (\d+\.\d+\.\d+)$/m', self::read('LICENSE.txt'), $licence);
-
-        self::assertNotEmpty($heading);
-        self::assertSame($heading[1], $licence[1] ?? null);
-    }
-
     /** @return list<string> every text file in the package working tree, relative to the root */
     private static function textFiles(): array
     {
