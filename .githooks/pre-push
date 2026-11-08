@@ -253,6 +253,15 @@ if [ -n "$tags_pushed" ]; then
 
     gate composer-validate composer validate --no-check-publish --quiet
     gate phpunit env MAGENTO_ROOT="$gate_root" "$gate_root/vendor/bin/phpunit" -c phpunit.xml.dist
+    # The Alpine.js component's Jest suite (Test/Jest). It needs this clone's node_modules: a missing
+    # jest refuses the tag rather than skipping the suite, because a skipped gate reads like a green one.
+    if [ ! -x "$root/node_modules/.bin/jest" ]; then
+        echo "" >&2
+        echo "  Tag push refused: node_modules/.bin/jest is missing. Run npm ci in $root first." >&2
+        echo "" >&2
+        exit 1
+    fi
+    gate jest env -C "$root" "$root/node_modules/.bin/jest" --ci
     gate phpcs "$gate_root/vendor/bin/phpcs" --standard=phpcs.xml.dist -q
     gate phpstan env MAGENTO_ROOT="$gate_root" TMPDIR="$stan_tmp" "$gate_root/vendor/bin/phpstan" analyse -c phpstan.neon.dist --no-progress --memory-limit=2G
 
