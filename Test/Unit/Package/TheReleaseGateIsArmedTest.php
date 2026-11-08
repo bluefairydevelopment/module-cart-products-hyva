@@ -83,7 +83,7 @@ class TheReleaseGateIsArmedTest extends TestCase
     {
         $code = self::executableLines((string) file_get_contents(self::root() . '/.githooks/pre-push'));
         self::assertStringContainsString('refs/tags/', $code, 'the hook does not distinguish a tag push');
-        foreach (['phpunit', 'phpcs', 'phpstan', 'composer validate'] as $gate) {
+        foreach (['phpunit', 'jest', 'phpcs', 'phpstan', 'composer validate'] as $gate) {
             self::assertMatchesRegularExpression(
                 '/^\s*gate \S+ .*' . preg_quote($gate, '/') . '/m',
                 $code,
