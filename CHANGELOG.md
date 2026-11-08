@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Tests
 
+- The test bootstrap now refuses static analysis when any imported Factory or Extension class is unresolved, whatever its namespace. It used to refuse only for this package's own namespace, so a Magento factory missing from a sparse `generated/code` was synthesised with a `create()` that returns null and phpstan exited 0. The refusal names every unresolved class and prints the `setup:di:compile` fix; the unit-test run still synthesises them. A new test runs the real bootstrap against a planted fixture. The module itself is unchanged.
 - The release check run before a version is tagged now also runs the storefront button's JavaScript tests, and refuses the tag if they fail or cannot run. No change to the module.
 
 ## 1.1.3 — 2026-10-28
