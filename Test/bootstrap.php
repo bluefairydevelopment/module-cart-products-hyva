@@ -24,9 +24,12 @@
  * 3. REFUSE to run without compiled DI rather than guess.
  *
  * 4. Synthesise a Factory/Extension class ONLY when composer cannot find a real
- *    file for it, and REFUSE to analyse if one in this package's OWN namespace
- *    would be synthesised - phpstan stops checking anything an empty stand-in
- *    returns, and exits 0 over its own blind spot.
+ *    file for it, and only for the unit-test run, which mocks these classes.
+ *    Under static analysis, REFUSE if ANY Factory/Extension class the shipped
+ *    code imports is unresolved, whatever its namespace (Magento's own
+ *    PageFactory as much as ours): phpstan stops checking anything an empty
+ *    stand-in returns, and exits 0 over its own blind spot. The refusal names
+ *    every unresolved class and prints the one-line fix.
  */
 
 declare(strict_types=1);
@@ -119,18 +122,15 @@ fwrite(STDERR, sprintf(
     $underAnalyser ? ' [static analysis]' : ''
 ));
 
-$ownUnresolved = array_filter(
-    array_keys($unresolved),
-    static fn (string $name): bool => str_starts_with($name, $ownNamespace)
-);
-
-if ($ownUnresolved !== [] && $underAnalyser) {
+if ($unresolved !== [] && $underAnalyser) {
     fwrite(STDERR, sprintf(
-        "\nREFUSING to analyse: %d class(es) in this package's OWN namespace cannot be resolved\n"
-        . "and would be SYNTHESISED as empty stand-ins:\n  %s\n"
-        . "Install this package on %s and compile, then analyse.\n\n",
-        count($ownUnresolved),
-        implode("\n  ", $ownUnresolved),
+        "\nREFUSING to analyse: %d imported Factory/Extension class(es) cannot be resolved\n"
+        . "and would be SYNTHESISED as empty stand-ins whose create() returns null, so\n"
+        . "phpstan would stop checking everything downstream and exit 0:\n  %s\n"
+        . "Fix:  cd %s && php -d memory_limit=-1 bin/magento setup:di:compile\n"
+        . "The unit suite is unaffected: it mocks these classes on purpose.\n\n",
+        count($unresolved),
+        implode("\n  ", array_keys($unresolved)),
         $magentoRoot
     ));
     // phpcs:ignore Magento2.Security.LanguageConstruct -- a test bootstrap that refuses to run exits non-zero; the exit is the refusal
