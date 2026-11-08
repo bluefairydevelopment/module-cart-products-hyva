@@ -55,17 +55,19 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
      * Every released base tag => its composer.json `require.magento/framework`
      * (null = not declared). Read via git from module-cart-products.
      *
-     * Tags v1.0.0, v1.0.1 and v1.0.2 were deleted (superseded, never install), so they are
+     * Tags v1.0.0 - v1.0.3 were deleted (superseded; v1.0.3 on 2026-11-08), so they are
      * no longer releases Composer can offer and are not recorded here: the git
-     * comparison below fails on a record naming a tag the history does not have. v1.0.3
-     * stays, with `magento/framework: "*"` - the unconstrained release this rule must
-     * still exclude, and the case that keeps the recorded check able to fail.
+     * comparison below fails on a record naming a tag the history does not have. No
+     * released base tag leaves magento/framework unconstrained any more, so the checks
+     * keep their ability to fail with UNCONSTRAINED_SPECIMEN, a planted release.
      */
     private const RELEASED_BASE_FRAMEWORK = [
-        'v1.0.3' => '*',
         'v1.0.4' => '^103.0.9',
         'v1.0.5' => '^103.0.9',
     ];
+
+    /** The record plus one planted unconstrained release - what v1.0.3 was - for the controls. */
+    private const UNCONSTRAINED_SPECIMEN = self::RELEASED_BASE_FRAMEWORK + ['v1.0.3' => '*'];
 
     /**
      * The environment for every git child process: this one with each GIT_* variable removed
@@ -236,8 +238,11 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
 
     public function testTheRequirementAdmitsNoRecordedBaseReleaseThatLeavesMagentoUnconstrained(): void
     {
-        $unconstrained = array_filter(self::RELEASED_BASE_FRAMEWORK, [self::class, 'constrainsNothing']);
-        self::assertNotEmpty($unconstrained, 'the record names no unconstrained release, so this check could not fail');
+        self::assertSame(
+            ['v1.0.3'],
+            self::admittedUnconstrained('^1.0', self::UNCONSTRAINED_SPECIMEN),
+            'the check does not catch a planted unconstrained release, so it could not fail'
+        );
 
         $requirement = self::ownRequirement();
         self::assertSame(
@@ -397,9 +402,9 @@ class TheBaseRequirementExcludesUnconstrainedBaseReleasesTest extends TestCase
     /** CONTROLS: the predicate rejects the requirement that shipped, and reads constraints the way Composer does. */
     public function testTheCheckRejectsTheRequirementThatShippedUpTo105(): void
     {
-        self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0', self::RELEASED_BASE_FRAMEWORK));
-        self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0.4 || 1.0.3', self::RELEASED_BASE_FRAMEWORK));
-        self::assertSame([], self::admittedUnconstrained('^1.0.4', self::RELEASED_BASE_FRAMEWORK));
+        self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0', self::UNCONSTRAINED_SPECIMEN));
+        self::assertSame(['v1.0.3'], self::admittedUnconstrained('^1.0.4 || 1.0.3', self::UNCONSTRAINED_SPECIMEN));
+        self::assertSame([], self::admittedUnconstrained('^1.0.4', self::UNCONSTRAINED_SPECIMEN));
         self::assertSame(['1.0.6'], self::admittedUnconstrained('^1.0.4', ['1.0.6' => '*', 'v1.0.7' => '^103.0.8']));
         self::assertSame(['v1.0.5', '1.0.6'], self::releaseTags(['v1.0.5', '1.0.6', 'nightly', 'release-candidate']));
 
