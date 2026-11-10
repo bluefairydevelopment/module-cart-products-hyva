@@ -1,54 +1,55 @@
 /**
  * Copyright 2026 Blue Fairy Development. All rights reserved.
  *
- * Jest tests for the cartExport() Alpine.js component defined in
+ * Jest tests for the cartExport Alpine.js component registered by
  * BlueFairy_CartProductsHyva::cart/export-button.phtml
  *
  * @jest-environment jsdom
  */
 
-/* ---------- extract the function under test ---------- */
+/* ---------- load the component from the template ---------- */
 
-// The phtml template defines a global `cartExport(url)` factory.
-// We replicate it here exactly as rendered (minus PHP escaper wrappers).
-function cartExport(url) {
-    return {
-        loading: false,
-        downloaded: false,
-        error: null,
-        async download() {
-            this.loading = true;
-            this.error = null;
-            this.downloaded = false;
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 30000);
-            try {
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    body: new URLSearchParams({ form_key: window.hyva.getFormKey() }),
-                    signal: controller.signal
-                });
-                clearTimeout(timeout);
-                if (!r.ok) throw new Error('Export failed. Please try again.');
-                const blob = await r.blob();
-                const filename = r.headers.get('X-Filename') ?? 'cart.csv';
-                const a = Object.assign(document.createElement('a'), {
-                    href: URL.createObjectURL(blob),
-                    download: filename
-                });
-                a.click();
-                setTimeout(() => URL.revokeObjectURL(a.href), 100);
-                this.downloaded = true;
-                setTimeout(() => { this.downloaded = false; }, 2000);
-            } catch (err) {
-                clearTimeout(timeout);
-                this.error = err.message;
-            } finally {
-                this.loading = false;
-            }
-        }
-    };
+// The component is the template's one inline script. It is read from the shipped
+// phtml and run as-is, so these tests exercise the code the storefront runs, not a copy.
+const fs = require('fs');
+const path = require('path');
+
+const TEMPLATE = path.join(__dirname, '../../view/frontend/templates/cart/export-button.phtml');
+const ERROR_MESSAGE = 'Export failed. Please try again.';
+
+function templateScript() {
+    const html = fs.readFileSync(TEMPLATE, 'utf8');
+    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+    if (scripts.length !== 1) {
+        throw new Error(`expected one inline script in the template, found ${scripts.length}`);
+    }
+    if (scripts[0][1].includes('<?')) {
+        throw new Error('the inline script must not contain PHP');
+    }
+    return scripts[0][1];
+}
+
+// Run the script, fire alpine:init, and return the factory it registered under the name.
+function registeredFactory(name) {
+    const registered = {};
+    global.Alpine = { data: jest.fn((n, fn) => { registered[n] = fn; }) };
+    // eslint-disable-next-line no-new-func
+    new Function(templateScript())();
+    window.dispatchEvent(new Event('alpine:init'));
+    delete global.Alpine;
+    return registered[name];
+}
+
+// What Alpine does: build the data object, give it $el (the x-data root), call init().
+function cartExport(url, dataset = { url, errorMessage: ERROR_MESSAGE }) {
+    const factory = registeredFactory('cartExport');
+    if (typeof factory !== 'function') {
+        throw new Error('the template did not register cartExport with Alpine.data');
+    }
+    const component = factory();
+    component.$el = { dataset };
+    component.init();
+    return component;
 }
 
 /* ---------- helpers ---------- */
@@ -298,5 +299,52 @@ describe('cartExport()', () => {
         // Advance to 100ms — revoked
         jest.advanceTimersByTime(1);
         expect(URL.revokeObjectURL).toHaveBeenCalledWith(makeBlobUrl());
+    });
+});
+
+describe('strict CSP registration and template bindings', () => {
+
+    test('11 — the script registers cartExport with Alpine.data on alpine:init, once', () => {
+        const calls = [];
+        global.Alpine = { data: jest.fn((n) => calls.push(n)) };
+        new Function(templateScript())();
+        expect(calls).toEqual([]);
+        window.dispatchEvent(new Event('alpine:init'));
+        window.dispatchEvent(new Event('alpine:init'));
+        expect(calls).toEqual(['cartExport']);
+        delete global.Alpine;
+    });
+
+    test('12 — the script defines no global cartExport function', () => {
+        delete window.cartExport;
+        global.Alpine = { data: jest.fn() };
+        new Function(templateScript())();
+        delete global.Alpine;
+        expect(window.cartExport).toBeUndefined();
+    });
+
+    test('13 — init reads the export URL and error message from the data attributes', async () => {
+        global.fetch = jest.fn().mockResolvedValue(makeResponse({ ok: false }));
+        const component = cartExport(null, { url: TEST_URL, errorMessage: 'Planted message' });
+        await component.download();
+        expect(global.fetch.mock.calls[0][0]).toBe(TEST_URL);
+        expect(component.error).toBe('Planted message');
+    });
+
+    test('14 — idle() is true only when neither loading nor downloaded', () => {
+        const component = cartExport(TEST_URL);
+        expect(component.idle()).toBe(true);
+        component.loading = true;
+        expect(component.idle()).toBe(false);
+        component.loading = false;
+        component.downloaded = true;
+        expect(component.idle()).toBe(false);
+    });
+
+    test('15 — busy() gives the aria-busy string for the loading state', () => {
+        const component = cartExport(TEST_URL);
+        expect(component.busy()).toBe('false');
+        component.loading = true;
+        expect(component.busy()).toBe('true');
     });
 });
