@@ -46,9 +46,10 @@ The button uses the same backend endpoint (`POST /bluefairy_cartproducts/cart/ex
 |---------|---------------|---------------|
 | Form key | `formkey` block inside an uncached block | `window.hyva.getFormKey()` at runtime |
 | JavaScript | Inline `<script>` with vanilla `fetch()` | Alpine.js `x-data` component |
-| URL escaping | `$escaper->escapeUrl()` | `$escaper->escapeHtmlAttr()` (in `x-data` attribute) |
+| URL escaping | `$escaper->escapeUrl()` | `$escaper->escapeHtmlAttr()` (in the `data-url` attribute) |
 | State management | DOM manipulation | Alpine.js reactive properties (`loading`, `downloaded`, `error`) |
 | Flash prevention | CSS (the error message is hidden by default) | `x-cloak` directive |
+| Strict CSP | Not applicable | Works with Hyvä strict CSP: the script is registered with `$hyvaCsp->registerInlineScript()`, and the component is registered with `Alpine.data` |
 
 ---
 
@@ -72,11 +73,15 @@ view/frontend/templates/cart/export-button.phtml
 
 ### Component API
 
+The template registers an Alpine component named `cartExport` with `Alpine.data`, and the button's wrapper uses it as `x-data="cartExport"`. The component reads the export URL from the wrapper's `data-url` attribute and the error text from `data-error-message`.
+
 ```javascript
-cartExport(url) {
+cartExport {
     loading: false,      // true while fetch is in progress
     downloaded: false,    // true for 2s after successful download
     error: null,          // error message string on failure
+    idle()                // true when neither loading nor downloaded
+    busy()                // 'true' or 'false', for aria-busy
     download()            // triggers the export
 }
 ```

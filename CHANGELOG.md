@@ -5,9 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.1.4 — Unreleased
+
+### Fixed
+
+- **The Export Cart button now works on Hyvä stores that use strict Content Security Policy.** Before, the browser blocked the button's script and Alpine could not read its markup, so the button did nothing. Stores without strict CSP see no change: the button looks and behaves as before.
 
 ### Tests
+
+- A new check reads the template and fails if its script is not registered with Hyvä's CSP helper, if the script mentions a script tag, or if an Alpine attribute holds anything other than a property or method name.
+- The button's JavaScript tests now load the script from the template itself instead of a copy of it.
 
 - The base-requirement test no longer depends on base tag v1.0.3, which was deleted; its controls use a planted unconstrained release instead. No change to the module.
 - The test bootstrap now refuses static analysis when any imported Factory or Extension class is unresolved, whatever its namespace. It used to refuse only for this package's own namespace, so a Magento factory missing from a sparse `generated/code` was synthesised with a `create()` that returns null and phpstan exited 0. The refusal names every unresolved class and prints the `setup:di:compile` fix; the unit-test run still synthesises them. A new test runs the real bootstrap against a planted fixture. The module itself is unchanged.
