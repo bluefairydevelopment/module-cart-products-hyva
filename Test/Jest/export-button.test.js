@@ -32,7 +32,11 @@ function templateScript() {
 // Run the script, fire alpine:init, and return the factory it registered under the name.
 function registeredFactory(name) {
     const registered = {};
-    global.Alpine = { data: jest.fn((n, fn) => { registered[n] = fn; }) };
+    global.Alpine = {
+        data: jest.fn((n, fn) => {
+            registered[n] = fn;
+        })
+    };
     // eslint-disable-next-line no-new-func
     new Function(templateScript())();
     window.dispatchEvent(new Event('alpine:init'));
@@ -100,7 +104,6 @@ afterEach(() => {
 /* ---------- tests ---------- */
 
 describe('cartExport()', () => {
-
     test('1 — initial state: loading false, downloaded false, error null', () => {
         const component = cartExport(TEST_URL);
         expect(component.loading).toBe(false);
@@ -111,7 +114,11 @@ describe('cartExport()', () => {
     test('2 — loading becomes true while fetch is in progress', async () => {
         // fetch that never resolves during our check
         let resolveFetch;
-        global.fetch = jest.fn().mockReturnValue(new Promise((resolve) => { resolveFetch = resolve; }));
+        global.fetch = jest.fn().mockReturnValue(
+            new Promise((resolve) => {
+                resolveFetch = resolve;
+            })
+        );
 
         const component = cartExport(TEST_URL);
         const promise = component.download();
@@ -157,9 +164,7 @@ describe('cartExport()', () => {
     });
 
     test('5 — X-Filename header value is used as download filename', async () => {
-        global.fetch = jest.fn().mockResolvedValue(
-            makeResponse({ headers: { 'X-Filename': 'my-custom-cart.csv' } })
-        );
+        global.fetch = jest.fn().mockResolvedValue(makeResponse({ headers: { 'X-Filename': 'my-custom-cart.csv' } }));
 
         let capturedAnchor;
         const origCreate = document.createElement.bind(document);
@@ -208,7 +213,9 @@ describe('cartExport()', () => {
         }));
 
         global.fetch = jest.fn().mockReturnValue(
-            new Promise((_resolve, reject) => { rejectFetch = reject; })
+            new Promise((_resolve, reject) => {
+                rejectFetch = reject;
+            })
         );
 
         const component = cartExport(TEST_URL);
@@ -303,7 +310,6 @@ describe('cartExport()', () => {
 });
 
 describe('strict CSP registration and template bindings', () => {
-
     test('11 — the script registers cartExport with Alpine.data on alpine:init, once', () => {
         const calls = [];
         global.Alpine = { data: jest.fn((n) => calls.push(n)) };
