@@ -39,6 +39,7 @@ class TheArchiveShipsNoDevelopmentToolingTest extends TestCase
         'phpstan.neon.dist',
         'phpcs.xml.dist',
         '.gitattributes',
+        '.prettierrc',
     ];
 
     /** Files the module cannot run without: if these are missing, the read examined nothing real. */
