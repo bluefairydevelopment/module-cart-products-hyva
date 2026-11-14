@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Development
 
-- The repository now carries the estate Prettier config (`.prettierrc`), so the lint gate blocks on formatting for this package. `.prettierrc` is export-ignored, so it never reaches the merchant archive. The Jest test file is reformatted; the module itself is unchanged. M2MAP-938.
+- The repository now carries a Prettier config (`.prettierrc`), and its JavaScript, CSS and JSON files follow it. `.prettierrc` is export-ignored, so it is not in the package archive. No behaviour change.
 
 ## 1.1.4 — 2026-11-10
 
