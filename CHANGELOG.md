@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Development
+
+- The repository now carries the estate Prettier config (`.prettierrc`), so the lint gate blocks on formatting for this package. `.prettierrc` is export-ignored, so it never reaches the merchant archive. The Jest test file is reformatted; the module itself is unchanged. M2MAP-938.
+
 ## 1.1.4 — 2026-11-10
 
 ### Fixed
