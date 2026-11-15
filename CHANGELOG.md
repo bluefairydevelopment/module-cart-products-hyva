@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Development
+
+- The repository now carries a Prettier config (`.prettierrc`), and its JavaScript, CSS and JSON files follow it. `.prettierrc` is export-ignored, so it is not in the package archive. No behaviour change.
+
 ## 1.1.4 — 2026-11-10
 
 ### Fixed
